@@ -1,7 +1,6 @@
 class User {
-  int id;
+  String token;
   String name;
-  String createdAt;
-  String updatedAt;
-  User({required this.id, required this.name, required this.createdAt, required this.updatedAt});
+  String email;
+  User({required this.token, required this.name, required this.email, re});
 }

@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:kasir_mobile/pages/home/home_body.dart';
-
 import 'package:kasir_mobile/provider/auth.dart';
 
-class HomeApp extends StatefulWidget {
-  const HomeApp({super.key});
+class Header extends StatefulWidget {
+  const Header({super.key});
 
   @override
-  State<HomeApp> createState() => _HomeAppState();
+  State<Header> createState() => _HeaderState();
 }
 
-class _HomeAppState extends State<HomeApp> {
+class _HeaderState extends State<Header> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF0F0EC),
       appBar: AppBar(
         flexibleSpace: Container(
           margin: EdgeInsets.only(top: 20),
@@ -58,7 +55,7 @@ class _HomeAppState extends State<HomeApp> {
                   ListTile(
                     title: const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [ 
+                      children: [
                         Text(
                           'Logout',
                           style: TextStyle(color: Colors.white),
@@ -82,7 +79,6 @@ class _HomeAppState extends State<HomeApp> {
           ],
         ),
       ),
-      body: const HomeBody(),
     );
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:kasir_mobile/main.dart';
 import 'package:kasir_mobile/provider/auth.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -10,13 +12,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final String? baseUrl = dotenv.env['BASE_URL'];
   final _formKey = GlobalKey<FormState>();
-  bool _paswordVisibility = false;
+  bool _paswordVisibility = true;
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
-  // Create storage
-  final storage = const FlutterSecureStorage();
 
   @override
   void dispose() {
@@ -27,20 +27,26 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _login(BuildContext context, String email, String password) async {
-    var respons = await Auth.login(email, password);
-    var res = await respons;
-    if (res.status == false) {
-      final snackBar = SnackBar(
-        duration: const Duration(seconds: 5),
-        content: Text(res.data),
-        backgroundColor: Colors.red,
-      );
+    try {
+      var response = await Auth.login(email, password);
+      if (response != null) {
+        if (response.status == false) {
+          final snackBar = SnackBar(
+            duration: const Duration(seconds: 5),
+            content: Text(response.data),
+            backgroundColor: Colors.red,
+          );
 
-      print(res.data);
-      // await storage.write(key: "token", value: res.t);
-
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      return;
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          return;
+        }
+        SharedPreferences pref = await SharedPreferences.getInstance();
+        pref.setString('AccessToken', response.data.token);
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => const MyApp()));
+      }
+    } catch (e, stacktrace) {
+      print('$e $stacktrace');
     }
   }
 
@@ -145,9 +151,10 @@ class _LoginPageState extends State<LoginPage> {
                         _formKey.currentState!.save();
                         // use the email provided here
                       }
-
-                      _login(context, emailController.text,
-                          passwordController.text);
+                      setState(() {
+                        _login(context, emailController.text,
+                            passwordController.text);
+                      });
                     },
                     style: TextButton.styleFrom(
                         backgroundColor: const Color(0xff076A68),

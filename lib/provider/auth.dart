@@ -1,23 +1,37 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
 import 'package:kasir_mobile/interface/user.dart';
+import 'package:http/http.dart' as http;
+import 'package:kasir_mobile/main.dart';
+import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Auth {
   bool status;
   dynamic data;
+  static var domain = dotenv.env["BASE_URL"] ?? "http://192.168.1.11:8080";
 
   Auth({required this.status, required this.data});
+
+  static deletePrefer(BuildContext context) async {
+    var pref = await SharedPreferences.getInstance();
+    pref.remove("AccessToken");
+    Navigator.pushReplacement(
+        // ignore: use_build_context_synchronously
+        context,
+        MaterialPageRoute(builder: ((context) => const MyApp())));
+  }
 
   factory Auth.loginResult(Map<String, dynamic> object) {
     try {
       if (object["status"] == true) {
         var data = object["data"];
         User user = User(
-            id: data["id"],
-            name: data["name"],
-            createdAt: data["created_at"],
-            updatedAt: data["updated_at"]);
+          token: data["token"],
+          name: data["user"],
+          email: data["email"],
+        );
         return Auth(status: object["status"], data: user);
       } else {
         return Auth(
@@ -25,24 +39,46 @@ class Auth {
           data: object["data"],
         );
       }
-    } catch (e) {
-      throw Exception(e);
+    } catch (e, stacktrace) {
+      throw Exception('$stacktrace: $e');
     }
   }
 
   static login(String email, String password) async {
     try {
-      var respons =
-          await http.post(Uri.parse("http://192.168.1.11:8001/api/login"),
-              body: jsonEncode(<String, String>{
-                'email': email,
-                'password': password,
-              }),
-              headers: <String, String>{'Content-Type': 'application/json'});
-      var jsonRespons = json.decode(respons.body);
-      return Auth.loginResult(jsonRespons);
+      var response = await http.post(Uri.https(domain, "api/login"),
+          body: jsonEncode({"email": email, "password": password}),
+          headers: {
+            "Content-Type": "application/json",
+          });
+
+      var data = jsonDecode(response.body);
+      return Auth.loginResult(data);
+    } catch (e, stacktrace) {
+      throw Exception('line: $stacktrace: $e');
+    }
+  }
+
+  static logout(BuildContext context) async {
+    try {
+      var pref = await SharedPreferences.getInstance();
+      var token = pref.getString('AccessToken');
+      var response = await http.post(
+          Uri.https(
+            domain,
+            "api/logout",
+          ),
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer $token',
+          });
+      var resJson = jsonDecode(response.body);
+      if (resJson['status']) {
+        deletePrefer(context);
+      }
+      // return resJson;
     } catch (e) {
-      print(e);
       return e;
     }
   }
