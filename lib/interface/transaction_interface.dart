@@ -4,7 +4,7 @@ class TransactionData {
   String price;
   String remaining;
   int count;
-  TransactionData.add(
+  TransactionData.set(
       {required this.id,
       required this.name,
       required this.price,
@@ -13,6 +13,6 @@ class TransactionData {
 
   @override
   String toString() {
-    return '{name: $name, price: $price, count: $count, remaining: $remaining}';
+    return '{id: $id, name: $name, price: $price, count: $count, remaining: $remaining}';
   }
 }

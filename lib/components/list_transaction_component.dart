@@ -1,20 +1,24 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class ListTransaction extends StatefulWidget {
-  const ListTransaction({
+  ListTransaction({
     super.key,
     required this.name,
     required this.price,
     required this.remaining,
-    required this.count,
+    this.count = 0,
   });
 
   final String name;
   final String price;
   final String remaining;
-  final int count;
+  int count = 0;
 
   @override
+  // ignore: library_private_types_in_public_api
   _ListTransactionState createState() => _ListTransactionState();
 }
 
@@ -69,15 +73,56 @@ class _ListTransactionState extends State<ListTransaction> {
                 ],
               ),
             ),
-            Container(
-              margin: const EdgeInsets.only(right: 20),
-              height: 35,
-              width: 20,
-              decoration: const BoxDecoration(
-                  color: Color(0xffE0EBFF),
-                  borderRadius: BorderRadius.all(Radius.circular(5))),
-              child: Center(child: Text(widget.count.toString())),
-            )
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      if (widget.count != 0) {
+                        widget.count--;
+                      }
+                    });
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.only(right: 10),
+                    height: 35,
+                    width: 25,
+                    decoration: const BoxDecoration(
+                        color: Color(0xffE0EBFF),
+                        borderRadius: BorderRadius.all(Radius.circular(5))),
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 20),
+                      child: const Icon(Icons.minimize),
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(right: 10),
+                  height: 35,
+                  width: 20,
+                  decoration: const BoxDecoration(
+                      color: Color(0xffE0EBFF),
+                      borderRadius: BorderRadius.all(Radius.circular(5))),
+                  child: Center(child: Text(widget.count.toString())),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      widget.count++;
+                    });
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.only(right: 10),
+                    height: 35,
+                    width: 25,
+                    decoration: const BoxDecoration(
+                        color: Color(0xffE0EBFF),
+                        borderRadius: BorderRadius.all(Radius.circular(5))),
+                    child: const Icon(Icons.add),
+                  ),
+                ),
+              ],
+            ),
           ],
         )
       ],

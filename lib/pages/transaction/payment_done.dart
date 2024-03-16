@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:kasir_mobile/main.dart';
+import 'package:kasir_mobile/pages/struk.dart';
 
 class PaymentDone extends StatelessWidget {
   const PaymentDone({super.key});
@@ -16,7 +18,15 @@ class PaymentDone extends StatelessWidget {
             borderRadius: BorderRadius.all(Radius.circular(5)),
             color: Color(0xff076A68),
           ),
-          child: const Icon(Icons.done),
+          child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => const MyApp()));
+              },
+              child: const Icon(
+                Icons.done,
+                color: Colors.white,
+              )),
         ),
       ),
       body: Container(
@@ -58,7 +68,12 @@ class PaymentDone extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xffFFCA45)),
                   onPressed: () {
-                    // Add your show Struk logic here
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Struk(),
+                      ),
+                    );
                   },
                   child: const Text(
                     'LIHAT STRUK',

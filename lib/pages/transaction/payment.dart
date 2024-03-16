@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:kasir_mobile/interface/transaction_interface.dart';
 import 'package:kasir_mobile/pages/transaction/payment_done.dart';
 
 class Payment extends StatefulWidget {
-  const Payment({super.key});
+  const Payment(
+      {super.key, required this.totalPrice, required this.listTransaction});
+
+  final List<TransactionData> listTransaction;
+  final int totalPrice;
 
   @override
   State<Payment> createState() => _PaymentState();
@@ -14,14 +19,22 @@ class _PaymentState extends State<Payment> {
   String nominal = "0";
 
   @override
+  void initState() {
+    // TODO: implement initState
+    print("transaction: ${widget.listTransaction}");
+    print("total transaction: ${widget.totalPrice}");
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: const Color(0xff076A68),
-        title: const Text(
-          "Transaksi",
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          "Rp. ${widget.totalPrice}",
+          style: const TextStyle(color: Colors.white),
         ),
       ),
       body: Padding(

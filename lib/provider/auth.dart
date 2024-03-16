@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kasir_mobile/interface/user.dart';
+import 'package:kasir_mobile/interface/user_interface.dart';
 import 'package:http/http.dart' as http;
 import 'package:kasir_mobile/main.dart';
 import 'dart:convert';
