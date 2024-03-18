@@ -75,6 +75,7 @@ class Auth {
           });
       var resJson = jsonDecode(response.body);
       if (resJson['status']) {
+        // ignore: use_build_context_synchronously
         deletePrefer(context);
       }
       // return resJson;

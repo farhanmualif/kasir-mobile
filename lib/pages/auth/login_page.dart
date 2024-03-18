@@ -37,16 +37,18 @@ class _LoginPageState extends State<LoginPage> {
             backgroundColor: Colors.red,
           );
 
+          // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
           return;
         }
         SharedPreferences pref = await SharedPreferences.getInstance();
         pref.setString('AccessToken', response.data.token);
         Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
             context, MaterialPageRoute(builder: (context) => const MyApp()));
       }
     } catch (e, stacktrace) {
-      print('$e $stacktrace');
+      debugPrint('$e $stacktrace');
     }
   }
 

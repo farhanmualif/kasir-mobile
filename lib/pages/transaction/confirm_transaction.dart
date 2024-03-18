@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:kasir_mobile/interface/transaction_interface.dart';
 import 'package:kasir_mobile/pages/transaction/payment.dart';
 
@@ -33,8 +32,8 @@ class _ConfirmTransactionState extends State<ConfirmTransaction> {
         };
       }
     }
-    print('groupedProduct $groupedProducts');
-    print('listTransaction ${widget.listTransaction}');
+    debugPrint('groupedProduct $groupedProducts');
+    debugPrint('listTransaction ${widget.listTransaction}');
   }
 
   int calculateTotalPrice() {

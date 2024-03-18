@@ -17,7 +17,7 @@ class _HomeAppState extends State<HomeApp> {
       backgroundColor: const Color(0xffF0F0EC),
       appBar: AppBar(
         flexibleSpace: Container(
-          margin: EdgeInsets.only(top: 20),
+          margin:const EdgeInsets.only(top: 20),
           child: const Image(
             image: AssetImage(
               "assets/images/icon_head.png",

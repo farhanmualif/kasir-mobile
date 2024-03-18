@@ -14,7 +14,7 @@ class _HeaderState extends State<Header> {
     return Scaffold(
       appBar: AppBar(
         flexibleSpace: Container(
-          margin: EdgeInsets.only(top: 20),
+          margin:const EdgeInsets.only(top: 20),
           child: const Image(
             image: AssetImage(
               "assets/images/icon_head.png",

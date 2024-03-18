@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kasir_mobile/main.dart';
 
 class Struk extends StatelessWidget {
   const Struk({super.key});
@@ -18,10 +19,11 @@ class Struk extends StatelessWidget {
           ),
           child: GestureDetector(
             onTap: () {
-              Navigator.pop(context);
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => const MyApp()));
             },
             child: const Icon(
-              Icons.arrow_back,
+              Icons.done,
               color: Colors.white,
             ),
           ),

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:kasir_mobile/interface/transaction_interface.dart';
 import 'package:kasir_mobile/pages/transaction/confirm_transaction.dart';
+import 'package:kasir_mobile/pages/transaction/form_add_product.dart';
 
 class Transaction extends StatefulWidget {
-  const Transaction({super.key});
+  const Transaction({super.key, required this.typeTransaction});
+
+  final String typeTransaction;
 
   @override
   State<Transaction> createState() => _TransactionState();
@@ -56,12 +59,11 @@ class _TransactionState extends State<Transaction> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: const Color(0xff076A68),
-        title: const Text(
-          "Transaksi",
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          widget.typeTransaction,
+          style: const TextStyle(color: Colors.white),
         ),
       ),
       body: Column(
@@ -93,8 +95,43 @@ class _TransactionState extends State<Transaction> {
               ],
             ),
           ),
+          // typeTransactionPembelian Barang
+          if (widget.typeTransaction == "Pembelian Barang")
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const FormAddProductPage()));
+              },
+              child: Container(
+                height: 85,
+                margin: const EdgeInsets.only(left: 20, right: 20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: -1,
+                      child: Container(
+                        margin:const EdgeInsets.only(right: 16),
+                        height: 50,
+                        width: 50,
+                        decoration: const BoxDecoration(
+                          color: Color(0xffD9D9D9),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(5),
+                          ),
+                        ),
+                        child: const Icon(Icons.add),
+                      ),
+                    ),
+                    const Text(
+                      "Tambah Barang",
+                      style: TextStyle(fontSize: 16),
+                    )
+                  ],
+                ),
+              ),
+            ),
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.85,
+            height: MediaQuery.of(context).size.height * 0.70,
             child: Stack(
               children: [
                 ListView.builder(
@@ -235,14 +272,16 @@ class _TransactionState extends State<Transaction> {
                     height: 60,
                     child: TextButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ConfirmTransaction(
-                              listTransaction: transaction,
+                        if (transaction.isNotEmpty) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ConfirmTransaction(
+                                listTransaction: transaction,
+                              ),
                             ),
-                          ),
-                        );
+                          );
+                        }
                       },
                       child: Row(
                         children: [

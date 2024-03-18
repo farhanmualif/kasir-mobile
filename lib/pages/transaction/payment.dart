@@ -20,9 +20,9 @@ class _PaymentState extends State<Payment> {
 
   @override
   void initState() {
-    // TODO: implement initState
-    print("transaction: ${widget.listTransaction}");
-    print("total transaction: ${widget.totalPrice}");
+   
+    debugPrint("transaction: ${widget.listTransaction}");
+    debugPrint("total transaction: ${widget.totalPrice}");
     super.initState();
   }
 
@@ -43,7 +43,7 @@ class _PaymentState extends State<Payment> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              margin: EdgeInsets.only(top: 60),
+              margin:const EdgeInsets.only(top: 60),
               child: Text(
                 "Rp. $nominal",
                 style: const TextStyle(
@@ -52,7 +52,7 @@ class _PaymentState extends State<Payment> {
                 ),
               ),
             ),
-            Spacer(),
+            const Spacer(),
             Row(
               children: [
                 Checkbox(
@@ -109,7 +109,7 @@ class _PaymentState extends State<Payment> {
                     child: const Center(
                       child: Text(
                         'C',
-                        style: const TextStyle(fontSize: 20.0),
+                        style:  TextStyle(fontSize: 20.0),
                       ),
                     ),
                   );
@@ -121,7 +121,7 @@ class _PaymentState extends State<Payment> {
                     child: const Center(
                       child: Text(
                         '0',
-                        style: const TextStyle(fontSize: 20.0),
+                        style:  TextStyle(fontSize: 20.0),
                       ),
                     ),
                   );
