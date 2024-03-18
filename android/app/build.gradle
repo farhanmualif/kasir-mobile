@@ -25,6 +25,7 @@ if (flutterVersionName == null) {
 android {
     namespace "com.example.kasir_mobile"
     compileSdk flutter.compileSdkVersion
+    // compileSdk 'com.android.tools.build:gradle:7.3'
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -64,4 +65,5 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+}
