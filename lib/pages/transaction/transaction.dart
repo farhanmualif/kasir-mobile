@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kasir_mobile/interface/transaction_interface.dart';
 import 'package:kasir_mobile/pages/transaction/confirm_transaction.dart';
 import 'package:kasir_mobile/pages/transaction/form_add_product.dart';
+import 'package:kasir_mobile/provider/get_product.dart';
 
 class Transaction extends StatefulWidget {
   const Transaction({super.key, required this.typeTransaction});
@@ -13,45 +15,9 @@ class Transaction extends StatefulWidget {
 }
 
 class _TransactionState extends State<Transaction> {
-  List<Map<String, dynamic>> products = [
-    {
-      "id": "1",
-      "name": "Gudang Garam",
-      "price": "60000",
-      "remaining": "30",
-      "count": 0
-    },
-    {
-      "id": "2",
-      "name": "Susu frisionflag",
-      "price": "1500",
-      "remaining": "5",
-      "count": 0
-    },
-    {
-      "id": "3",
-      "name": "Aqua Galon",
-      "price": "20000",
-      "remaining": "10",
-      "count": 0
-    },
-    {
-      "id": "4",
-      "name": "Le mineral",
-      "price": "3000",
-      "remaining": "21",
-      "count": 0
-    },
-    {
-      "id": "5",
-      "name": "Roma Kelapa",
-      "price": "5000",
-      "remaining": "30",
-      "count": 0
-    },
-  ];
-
   int count = 0;
+
+  var domain = dotenv.env['BASE_URL'];
 
   List<TransactionData> transaction = [];
 
@@ -110,7 +76,7 @@ class _TransactionState extends State<Transaction> {
                     Expanded(
                       flex: -1,
                       child: Container(
-                        margin:const EdgeInsets.only(right: 16),
+                        margin: const EdgeInsets.only(right: 16),
                         height: 50,
                         width: 50,
                         decoration: const BoxDecoration(
@@ -132,186 +98,226 @@ class _TransactionState extends State<Transaction> {
             ),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.70,
-            child: Stack(
-              children: [
-                ListView.builder(
-                  itemCount: products.length,
-                  itemBuilder: (context, index) {
-                    return Column(
+            child: FutureBuilder(
+              future: GetProduct.getProduct(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else {
+                  if (snapshot.data?.data != null) {
+                    return Stack(
                       children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: -1,
-                              child: Container(
-                                margin: const EdgeInsets.all(5),
-                                height: 50,
-                                width: 50,
-                                decoration: const BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(5)),
-                                    image: DecorationImage(
-                                        image: AssetImage(
-                                            "assets/images/image.png"))),
-                              ),
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    products[index]['name'],
-                                    style: const TextStyle(fontSize: 16),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        products[index]['remaining'],
-                                        style: const TextStyle(fontSize: 10),
-                                      ),
-                                      Container(
-                                        margin: const EdgeInsets.only(
-                                            left: 5, right: 5),
-                                        child: const Icon(
-                                          Icons.do_not_disturb_on_sharp,
-                                          size: 10,
+                        ListView.builder(
+                          itemCount: snapshot.data?.data.length,
+                          itemBuilder: (context, index) {
+                            return Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      flex: -1,
+                                      child: Container(
+                                        margin: const EdgeInsets.all(5),
+                                        height: 50,
+                                        width: 50,
+                                        decoration: BoxDecoration(
+                                          borderRadius: const BorderRadius.all(
+                                            Radius.circular(5),
+                                          ),
+                                          image: DecorationImage(
+                                            image: NetworkImage(
+                                              "https://$domain/storage/images/${snapshot.data!.data[index].image}",
+                                            ),
+                                            fit: BoxFit.cover,
+                                          ),
                                         ),
                                       ),
-                                      Text("Rp.${products[index]['price']}",
-                                          style: const TextStyle(fontSize: 10))
-                                    ],
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            snapshot.data!.data[index].name,
+                                            style:
+                                                const TextStyle(fontSize: 16),
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "${snapshot.data!.data[index].stock}",
+                                                style: const TextStyle(
+                                                    fontSize: 10),
+                                              ),
+                                              Container(
+                                                margin: const EdgeInsets.only(
+                                                    left: 5, right: 5),
+                                                child: const Icon(
+                                                  Icons.do_not_disturb_on_sharp,
+                                                  size: 10,
+                                                ),
+                                              ),
+                                              Text(
+                                                  "Rp.${snapshot.data!.data[index].sellingPrice}",
+                                                  style: const TextStyle(
+                                                      fontSize: 10))
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              if (transaction.isNotEmpty) {
+                                                final lastIndexs = transaction
+                                                    .lastIndexWhere((element) =>
+                                                        element.id ==
+                                                        snapshot.data!
+                                                            .data[index].id);
+
+                                                if (lastIndexs != -1) {
+                                                  transaction
+                                                      .removeAt(lastIndexs);
+                                                }
+                                              }
+                                            });
+                                          },
+                                          child: Container(
+                                            margin: const EdgeInsets.only(
+                                                right: 10),
+                                            height: 35,
+                                            width: 25,
+                                            decoration: const BoxDecoration(
+                                                color: Color(0xffE0EBFF),
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(5))),
+                                            child: Container(
+                                              margin: const EdgeInsets.only(
+                                                  bottom: 20),
+                                              child: const Icon(Icons.minimize),
+                                            ),
+                                          ),
+                                        ),
+                                        Container(
+                                          margin:
+                                              const EdgeInsets.only(right: 10),
+                                          height: 35,
+                                          width: 20,
+                                          decoration: const BoxDecoration(
+                                              color: Color(0xffE0EBFF),
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(5))),
+                                          child: Center(
+                                              child: Text(transaction
+                                                  .where((element) =>
+                                                      element.id ==
+                                                      snapshot
+                                                          .data!.data[index].id)
+                                                  .length
+                                                  .toString())),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              transaction.add(
+                                                  TransactionData.set(
+                                                      id: snapshot
+                                                          .data!.data[index].id,
+                                                      name: snapshot.data!
+                                                          .data[index].name,
+                                                      price: snapshot
+                                                          .data!
+                                                          .data[index]
+                                                          .sellingPrice,
+                                                      remaining: snapshot.data!
+                                                          .data[index].stock));
+                                            });
+                                          },
+                                          child: Container(
+                                            margin: const EdgeInsets.only(
+                                                right: 10),
+                                            height: 35,
+                                            width: 25,
+                                            decoration: const BoxDecoration(
+                                                color: Color(0xffE0EBFF),
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(5))),
+                                            child: const Icon(Icons.add),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                )
+                              ],
+                            );
+                          },
+                        ),
+                        Container(
+                          alignment: Alignment.bottomCenter,
+                          margin: const EdgeInsets.only(bottom: 20),
+                          child: Container(
+                            decoration: const BoxDecoration(
+                                color: Color(0xffFFCA45),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50))),
+                            width: 330,
+                            height: 60,
+                            child: TextButton(
+                              onPressed: () {
+                                if (transaction.isNotEmpty) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ConfirmTransaction(
+                                        listTransaction: transaction,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                      child: Text(
+                                    transaction.length.toString(),
+                                    style: const TextStyle(
+                                        fontSize: 40,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xff000000)),
+                                  )),
+                                  const Expanded(
+                                      flex: -1,
+                                      child: Text(
+                                        "Lanjut",
+                                        style:
+                                            TextStyle(color: Color(0xff000000)),
+                                      )),
+                                  const Expanded(
+                                    flex: -1,
+                                    child: Icon(
+                                      Icons.navigate_next,
+                                      color: Color(0xff000000),
+                                    ),
                                   )
                                 ],
                               ),
                             ),
-                            Row(
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      if (transaction.isNotEmpty) {
-                                        final lastIndexs = transaction
-                                            .lastIndexWhere((element) =>
-                                                element.id ==
-                                                products[index]['id']);
-
-                                        if (lastIndexs != -1) {
-                                          transaction.removeAt(lastIndexs);
-                                        }
-                                      }
-                                    });
-                                  },
-                                  child: Container(
-                                    margin: const EdgeInsets.only(right: 10),
-                                    height: 35,
-                                    width: 25,
-                                    decoration: const BoxDecoration(
-                                        color: Color(0xffE0EBFF),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(5))),
-                                    child: Container(
-                                      margin: const EdgeInsets.only(bottom: 20),
-                                      child: const Icon(Icons.minimize),
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(right: 10),
-                                  height: 35,
-                                  width: 20,
-                                  decoration: const BoxDecoration(
-                                      color: Color(0xffE0EBFF),
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(5))),
-                                  child: Center(
-                                      child: Text(transaction
-                                          .where((element) =>
-                                              element.id ==
-                                              products[index]['id'])
-                                          .length
-                                          .toString())),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      transaction.add(TransactionData.set(
-                                          id: products[index]['id'],
-                                          name: products[index]['name'],
-                                          price: products[index]['price'],
-                                          remaining: products[index]
-                                              ['remaining']));
-                                    });
-                                  },
-                                  child: Container(
-                                    margin: const EdgeInsets.only(right: 10),
-                                    height: 35,
-                                    width: 25,
-                                    decoration: const BoxDecoration(
-                                        color: Color(0xffE0EBFF),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(5))),
-                                    child: const Icon(Icons.add),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        )
+                          ),
+                        ),
                       ],
                     );
-                  },
-                ),
-                Container(
-                  alignment: Alignment.bottomCenter,
-                  margin: const EdgeInsets.only(bottom: 20),
-                  child: Container(
-                    decoration: const BoxDecoration(
-                        color: Color(0xffFFCA45),
-                        borderRadius: BorderRadius.all(Radius.circular(50))),
-                    width: 330,
-                    height: 60,
-                    child: TextButton(
-                      onPressed: () {
-                        if (transaction.isNotEmpty) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ConfirmTransaction(
-                                listTransaction: transaction,
-                              ),
-                            ),
-                          );
-                        }
-                      },
-                      child: Row(
-                        children: [
-                          Expanded(
-                              child: Text(
-                            transaction.length.toString(),
-                            style: const TextStyle(
-                                fontSize: 40,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xff000000)),
-                          )),
-                          const Expanded(
-                              flex: -1,
-                              child: Text(
-                                "Lanjut",
-                                style: TextStyle(color: Color(0xff000000)),
-                              )),
-                          const Expanded(
-                            flex: -1,
-                            child: Icon(
-                              Icons.navigate_next,
-                              color: Color(0xff000000),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+                  } else {
+                    return const Text("Produk Kosong");
+                  }
+                }
+              },
             ),
           ),
         ],

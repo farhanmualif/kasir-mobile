@@ -14,276 +14,275 @@ class _StokProductManagementState extends State<StokProductManagement> {
 
   Future<void> showEditingFormDialog(BuildContext context) async {
     return await showDialog(
-        context: context,
-        builder: (context) {
-          return StatefulBuilder(builder: (context, setState) {
-            return AlertDialog(
-              content: SizedBox(
-                child: Form(
-                  key: _formKey,
-                  child: SizedBox(
-                    width: 320,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Manajemen Stok",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        const Divider(),
-                        Row(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            content: SizedBox(
+              height: 410,
+              child: Form(
+                key: _formKey,
+                child: SizedBox(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Manajemen Stok",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const Divider(),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: -1,
+                            child: Container(
+                              height: 40,
+                              width: 40,
+                              decoration: const BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50)),
+                                  image: DecorationImage(
+                                      image: AssetImage(
+                                    "assets/images/default-product.png",
+                                  ))),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          const Expanded(
+                            flex: 2,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Aqua Galon",
+                                  style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  "898928756327",
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Expanded(
+                            flex: 2,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  "Rp. 200000",
+                                  style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  "Stok: 10",
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(left: 10, right: 10),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Expanded(
-                              flex: -1,
-                              child: Container(
-                                height: 40,
-                                width: 40,
-                                decoration: const BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50)),
-                                    image: DecorationImage(
-                                        image: AssetImage(
-                                      "assets/images/default-product.png",
-                                    ))),
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            const Expanded(
-                              flex: 2,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Aqua Galon",
-                                    style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    "898928756327",
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const Expanded(
-                              flex: 2,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    "Rp. 200000",
-                                    style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    "Stok: 10",
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            Row(
+                              children: [
+                                Radio(
+                                  value: "reduce",
+                                  groupValue: _typeChange,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _typeChange = value!;
+                                    });
+                                  },
+                                ),
+                                const Text("Tambah"),
+                                Radio(
+                                  value: "add",
+                                  groupValue: _typeChange,
+                                  onChanged: (value) {
+                                    setState(
+                                      () {
+                                        _typeChange = value!;
+                                      },
+                                    );
+                                  },
+                                ),
+                                const Text("Kurangi")
+                              ],
                             ),
                           ],
                         ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(left: 10, right: 10),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () {},
+                            child: const Icon(
+                              Icons.calendar_month_outlined,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          const Text(
+                            "Klik untuk Menentukan Tanggal",
+                            style: TextStyle(
+                                fontSize: 10, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      Row(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                children: [
-                                  Radio(
-                                    value: "reduce",
-                                    groupValue: _typeChange,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _typeChange = value!;
-                                      });
-                                    },
+                              const Text(
+                                "Harga Dasar",
+                                style: TextStyle(
+                                    fontSize: 13, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 10),
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.33,
+                                child: TextFormField(
+                                  initialValue: "19.000",
+                                  decoration: const InputDecoration(
+                                    prefixText: "Rp. ",
+                                    hintStyle: TextStyle(fontSize: 15),
+                                    border: OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(50)),
+                                    ),
+                                    isCollapsed: true,
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.all(5),
                                   ),
-                                  const Text("Tambah"),
-                                  Radio(
-                                    value: "add",
-                                    groupValue: _typeChange,
-                                    onChanged: (value) {
-                                      setState(
-                                        () {
-                                          _typeChange = value!;
-                                        },
-                                      );
-                                    },
-                                  ),
-                                  const Text("Kurangi")
-                                ],
+                                ),
                               ),
                             ],
                           ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () {},
-                              child: const Icon(
-                                Icons.calendar_month_outlined,
+                          const SizedBox(width: 10),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Jumlah",
+                                style: TextStyle(
+                                    fontSize: 13, fontWeight: FontWeight.bold),
                               ),
-                            ),
-                            const SizedBox(width: 10),
-                            const Text(
-                              "Klik untuk Menentukan Tanggal",
-                              style: TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        Row(
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  "Harga Dasar",
-                                  style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                const SizedBox(height: 10),
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.33,
-                                  child: TextFormField(
-                                    decoration: const InputDecoration(
-                                      hintStyle: TextStyle(fontSize: 15),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50)),
-                                      ),
-                                      isCollapsed: true,
-                                      isDense: true,
-                                      contentPadding: EdgeInsets.all(5),
+                              const SizedBox(height: 10),
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.33,
+                                child: TextFormField(
+                                  decoration: const InputDecoration(
+                                    hintStyle: TextStyle(fontSize: 15),
+                                    border: OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(50)),
                                     ),
+                                    isCollapsed: true,
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.all(5),
                                   ),
                                 ),
-                              ],
-                            ),
-                            const SizedBox(width: 10),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  "Jumlah",
-                                  style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                const SizedBox(height: 10),
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.33,
-                                  child: TextFormField(
-                                    decoration: const InputDecoration(
-                                      hintStyle: TextStyle(fontSize: 15),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50)),
-                                      ),
-                                      isCollapsed: true,
-                                      isDense: true,
-                                      contentPadding: EdgeInsets.all(5),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        const Text(
-                          "Keterangan",
-                          style: TextStyle(
-                              fontSize: 13, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 10),
-                        SizedBox(
-                          child: TextFormField(
-                            decoration: const InputDecoration(
-                              hintStyle: TextStyle(fontSize: 15),
-                              border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50)),
                               ),
-                              isCollapsed: true,
-                              isDense: true,
-                              contentPadding: EdgeInsets.all(5),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      const Text(
+                        "Keterangan",
+                        style: TextStyle(
+                            fontSize: 13, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        child: TextFormField(
+                          decoration: const InputDecoration(
+                            hintStyle: TextStyle(fontSize: 15),
+                            border: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50)),
                             ),
+                            isCollapsed: true,
+                            isDense: true,
+                            contentPadding: EdgeInsets.all(5),
                           ),
                         ),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                height: 34,
-                                decoration: const BoxDecoration(
-                                    color: Color(0xffFFCA45),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(20))),
-                                child: const TextButton(
-                                  onPressed: null,
-                                  child: Text(
-                                    "Batal",
-                                    style: TextStyle(color: Colors.black),
-                                  ),
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 34,
+                              decoration: const BoxDecoration(
+                                  color: Color(0xffFFCA45),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20))),
+                              child: const TextButton(
+                                onPressed: null,
+                                child: Text(
+                                  "Batal",
+                                  style: TextStyle(color: Colors.black),
                                 ),
                               ),
                             ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            Expanded(
-                              child: Container(
-                                height: 34,
-                                decoration: const BoxDecoration(
-                                    color: Color(0xff076A68),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(20))),
-                                child: const TextButton(
-                                  onPressed: null,
-                                  child: Text(
-                                    "Simpan",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
+                          ),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Expanded(
+                            child: Container(
+                              height: 34,
+                              decoration: const BoxDecoration(
+                                  color: Color(0xff076A68),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20))),
+                              child: const TextButton(
+                                onPressed: null,
+                                child: Text(
+                                  "Simpan",
+                                  style: TextStyle(color: Colors.white),
                                 ),
                               ),
-                            )
-                          ],
-                        )
-                      ],
-                    ),
+                            ),
+                          )
+                        ],
+                      )
+                    ],
                   ),
                 ),
               ),
-            );
-          });
+            ),
+          );
         });
+      },
+    );
   }
 
   @override
@@ -313,7 +312,7 @@ class _StokProductManagementState extends State<StokProductManagement> {
                 Expanded(
                   child: TextField(
                     decoration: InputDecoration(
-                      hintText: "Cari Categori",
+                      hintText: "Cari Produk",
                       suffixIcon: const Icon(
                         Icons.search,
                         size: 35,
@@ -326,6 +325,16 @@ class _StokProductManagementState extends State<StokProductManagement> {
                       ),
                     ),
                   ),
+                ),
+                const SizedBox(
+                  width: 15,
+                ),
+                const Expanded(
+                  flex: -1,
+                  child: Image(image: AssetImage("assets/images/barcode.png")),
+                ),
+                const SizedBox(
+                  width: 15,
                 ),
               ],
             ),

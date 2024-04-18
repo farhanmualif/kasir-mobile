@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:kasir_mobile/pages/management/management.dart';
 import 'package:kasir_mobile/pages/report/report_page.dart';
 import 'package:kasir_mobile/pages/transaction/transaction.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeBody extends StatefulWidget {
   const HomeBody({super.key});
@@ -35,9 +37,15 @@ class _HomeBodyState extends State<HomeBody> {
     debugPrint('management cliked');
   }
 
-  // get name async {
-  //   SharedPreferences pref = await SharedPreferences.getInstance();
-  // }
+  Future<String?> _getUsername() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    return pref.getString("name");
+  }
+
+  String _dateNow() {
+    DateTime now = DateTime.now();
+    return DateFormat("EEEE d MMMM").format(now);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,22 +55,36 @@ class _HomeBodyState extends State<HomeBody> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Row(
+            Row(
               children: [
-                Expanded(
-                    flex: -1,
-                    child: Text(
-                      'Selamat Siang, Nay',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    )),
-                Spacer(),
+                FutureBuilder<String?>(
+                  future: _getUsername(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Text("");
+                    } else {
+                      if (snapshot.hasData) {
+                        return Expanded(
+                          flex: -1,
+                          child: Text(
+                            "Hello ${snapshot.data!}",
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                          ),
+                        );
+                      } else {
+                        return const Text("");
+                      }
+                    }
+                  },
+                ),
+                const Spacer(),
                 Expanded(
                   child: Text(
-                    "jum'at 8 Maret 2024",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 11),
+                    _dateNow(),
+                    textAlign: TextAlign.end,
+                    style: const TextStyle(fontSize: 11),
                   ),
                 ),
               ],

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:kasir_mobile/interface/transaction_interface.dart';
 import 'package:kasir_mobile/pages/transaction/payment_done.dart';
+import 'package:kasir_mobile/provider/post_transaction.dart';
 
 class Payment extends StatefulWidget {
   const Payment(
       {super.key, required this.totalPrice, required this.listTransaction});
 
-  final List<TransactionData> listTransaction;
+  final dynamic listTransaction;
   final int totalPrice;
 
   @override
@@ -14,17 +14,14 @@ class Payment extends StatefulWidget {
 }
 
 class _PaymentState extends State<Payment> {
-  int _selectedIndex = 0;
-
   String nominal = "0";
 
   @override
   void initState() {
-   
-    debugPrint("transaction: ${widget.listTransaction}");
-    debugPrint("total transaction: ${widget.totalPrice}");
     super.initState();
   }
+
+  postTransaction() {}
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +40,7 @@ class _PaymentState extends State<Payment> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              margin:const EdgeInsets.only(top: 60),
+              margin: const EdgeInsets.only(top: 60),
               child: Text(
                 "Rp. $nominal",
                 style: const TextStyle(
@@ -53,34 +50,22 @@ class _PaymentState extends State<Payment> {
               ),
             ),
             const Spacer(),
-            Row(
-              children: [
-                Checkbox(
-                  value: _selectedIndex == 1,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedIndex = value! ? 1 : 0;
-                    });
-                  },
-                ),
-                const Text('Tandai Sebagai Piutang'),
-              ],
-            ),
+            const Divider(),
             const SizedBox(height: 16.0),
             GridView.count(
               crossAxisCount: 3,
               shrinkWrap: true,
               children: List.generate(9, (index) {
-                return Center(
-                  child: InkWell(
-                    onTap: () {
-                      setState(() {
-                        if (nominal == "0") {
-                          nominal = "";
-                        }
-                        nominal = (nominal + (index + 1).toString());
-                      });
-                    },
+                return InkWell(
+                  onTap: () {
+                    setState(() {
+                      if (nominal == "0") {
+                        nominal = "";
+                      }
+                      nominal = (nominal + (index + 1).toString());
+                    });
+                  },
+                  child: Center(
                     child: Text(
                       (index + 1).toString(),
                       style: const TextStyle(fontSize: 20.0),
@@ -109,19 +94,21 @@ class _PaymentState extends State<Payment> {
                     child: const Center(
                       child: Text(
                         'C',
-                        style:  TextStyle(fontSize: 20.0),
+                        style: TextStyle(fontSize: 20.0),
                       ),
                     ),
                   );
                 } else if (index == 0) {
                   return InkWell(
                     onTap: () {
-                      // Add your onPress logic here for resetting nominal
+                      setState(() {
+                        nominal = '${nominal}0';
+                      });
                     },
                     child: const Center(
                       child: Text(
                         '0',
-                        style:  TextStyle(fontSize: 20.0),
+                        style: TextStyle(fontSize: 20.0),
                       ),
                     ),
                   );
@@ -150,11 +137,60 @@ class _PaymentState extends State<Payment> {
                   color: Color(0xffFFCA45),
                   borderRadius: BorderRadius.all(Radius.circular(5))),
               child: TextButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const PaymentDone()));
+                onPressed: () async {
+                  if (int.parse(nominal) < widget.totalPrice) {
+                    const snackBar = SnackBar(
+                      duration: Duration(seconds: 5),
+                      content:
+                          Text("Nominal tidak boleh kurang dari total harga"),
+                      backgroundColor: Colors.red,
+                    );
+
+                    // ignore: use_build_context_synchronously
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    return;
+                  }
+
+                  List<RequestTransaction> transaction = [];
+
+                  List<Map<String, dynamic>> groupedTransaction =
+                      widget.listTransaction.values.toList();
+
+                  int totalPayment = 0;
+                  int change = int.parse(nominal) - widget.totalPrice;
+
+                  for (var item in groupedTransaction) {
+                    totalPayment = totalPayment +
+                        ((item['price'] as num).toInt() *
+                            (item['count'] as num).toInt());
+                    RequestTransaction requestTransaction = RequestTransaction(
+                        idProduct: item['id'],
+                        name: item['name'],
+                        itemPrice: item['price'],
+                        quantity: item['count']);
+                    transaction.add(requestTransaction);
+                  }
+
+                  var postTransaction = await PostTransaction.post(
+                      double.parse(nominal), transaction);
+                  if (postTransaction['status'] == true) {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PaymentDone(
+                                  change: change,
+                                )));
+                  } else {
+                    var snackBar = SnackBar(
+                      duration: const Duration(seconds: 5),
+                      content: Text(postTransaction['message'].toString()),
+                      backgroundColor: Colors.red,
+                    );
+
+                    // ignore: use_build_context_synchronously
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    return;
+                  }
                 },
                 child: const Text(
                   'BAYAR',

@@ -1,8 +1,8 @@
 class TransactionData {
-  String id;
+  int id;
   String name;
-  String price;
-  String remaining;
+  double price;
+  int remaining;
   int count;
   TransactionData.set(
       {required this.id,

@@ -19,7 +19,7 @@ class _ConfirmTransactionState extends State<ConfirmTransaction> {
   void initState() {
     super.initState();
     for (var product in widget.listTransaction) {
-      int id = int.parse(product.id);
+      int id = product.id;
       if (groupedProducts.containsKey(id)) {
         groupedProducts[id]!['count']++;
       } else {
@@ -40,7 +40,7 @@ class _ConfirmTransactionState extends State<ConfirmTransaction> {
     totalPrice = 0;
     for (var product in groupedProducts.values) {
       int quantity = product['count'];
-      int price = int.parse(product['price']);
+      int price = product['price'].toInt();
       totalPrice += quantity * price;
     }
     return totalPrice;
@@ -96,9 +96,11 @@ class _ConfirmTransactionState extends State<ConfirmTransaction> {
                   itemBuilder: (context, index) {
                     Map<String, dynamic> product =
                         groupedProducts.values.toList()[index];
+
                     int quantity = product['count'];
-                    int price = int.parse(product['price']);
+                    int price = product['price'].toInt();
                     totalPrice = quantity * price;
+
                     return Column(
                       children: [
                         Row(
@@ -197,7 +199,7 @@ class _ConfirmTransactionState extends State<ConfirmTransaction> {
                             MaterialPageRoute(
                               builder: (context) => Payment(
                                 totalPrice: calculateTotalPrice(),
-                                listTransaction: widget.listTransaction,
+                                listTransaction: groupedProducts,
                               ),
                             ),
                           );

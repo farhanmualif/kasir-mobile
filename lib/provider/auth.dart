@@ -9,10 +9,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Auth {
   bool status;
+  String message;
   dynamic data;
   static var domain = dotenv.env["BASE_URL"] ?? "http://192.168.1.11:8080";
 
-  Auth({required this.status, required this.data});
+  Auth({required this.status, required this.data, required this.message});
 
   static deletePrefer(BuildContext context) async {
     var pref = await SharedPreferences.getInstance();
@@ -29,15 +30,17 @@ class Auth {
         var data = object["data"];
         User user = User(
           token: data["token"],
+          uuid: data["uuid"],
           name: data["user"],
           email: data["email"],
         );
-        return Auth(status: object["status"], data: user);
+        return Auth(
+            status: object["status"], data: user, message: object['message']);
       } else {
         return Auth(
-          status: object["status"],
-          data: object["data"],
-        );
+            status: object["status"],
+            data: object["data"],
+            message: object['message']);
       }
     } catch (e, stacktrace) {
       throw Exception('$stacktrace: $e');
@@ -79,6 +82,27 @@ class Auth {
         deletePrefer(context);
       }
       // return resJson;
+    } catch (e) {
+      return e;
+    }
+  }
+
+  static checkAuth() async {
+    try {
+      var pref = await SharedPreferences.getInstance();
+      var token = pref.getString('AccessToken');
+      var response = await http.get(
+          Uri.https(
+            domain,
+            "api/check-auth",
+          ),
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer $token',
+          });
+      var res = jsonDecode(response.body);
+      return res;
     } catch (e) {
       return e;
     }

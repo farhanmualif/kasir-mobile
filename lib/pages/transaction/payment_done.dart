@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:kasir_mobile/main.dart';
 import 'package:kasir_mobile/pages/struk.dart';
 
+// ignore: must_be_immutable
 class PaymentDone extends StatelessWidget {
-  const PaymentDone({super.key});
+  int change;
+  PaymentDone({super.key, required this.change});
 
   @override
   Widget build(BuildContext context) {
@@ -59,9 +61,10 @@ class PaymentDone extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 25.0),
-                const Text(
-                  'Kembalian: Rp 500',
-                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                Text(
+                  'Kembalian: $change',
+                  style: const TextStyle(
+                      fontSize: 16.0, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 22.0),
                 ElevatedButton(
