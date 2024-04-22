@@ -4,7 +4,7 @@ import 'package:kasir_mobile/pages/transaction/payment.dart';
 
 class ConfirmTransaction extends StatefulWidget {
   const ConfirmTransaction({super.key, required this.listTransaction});
-
+ 
   final List<TransactionData> listTransaction;
 
   @override
@@ -29,11 +29,10 @@ class _ConfirmTransactionState extends State<ConfirmTransaction> {
           'price': product.price,
           'count': 1, // Inisialisasi count dengan 1
           'remaining': product.remaining,
+          'image': product.image
         };
       }
     }
-    debugPrint('groupedProduct $groupedProducts');
-    debugPrint('listTransaction ${widget.listTransaction}');
   }
 
   int calculateTotalPrice() {
@@ -119,12 +118,12 @@ class _ConfirmTransactionState extends State<ConfirmTransaction> {
                                 margin: const EdgeInsets.all(5),
                                 height: 50,
                                 width: 50,
-                                decoration: const BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(5)),
+                                decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(5)),
                                     image: DecorationImage(
-                                        image: AssetImage(
-                                            "assets/images/image.png"))),
+                                        image:
+                                            NetworkImage(product['image']!))),
                               ),
                             ),
                             Expanded(

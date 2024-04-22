@@ -256,6 +256,7 @@ class _ListDailyReportState extends State<ListDailyReport> {
                                     ),
                                     GestureDetector(
                                       onTap: () {
+                                        
                                         Navigator.of(context).push(
                                             MaterialPageRoute(
                                                 builder: (context) =>

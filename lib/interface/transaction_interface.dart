@@ -4,9 +4,11 @@ class TransactionData {
   double price;
   int remaining;
   int count;
+  String image;
   TransactionData.set(
       {required this.id,
       required this.name,
+      required this.image,
       required this.price,
       this.count = 0,
       required this.remaining});

@@ -91,16 +91,12 @@ class Auth {
     try {
       var pref = await SharedPreferences.getInstance();
       var token = pref.getString('AccessToken');
-      var response = await http.get(
-          Uri.https(
-            domain,
-            "api/check-auth",
-          ),
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': 'Bearer $token',
-          });
+      var response =
+          await http.get(Uri.https(domain,"api/check-auth"), headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      });
       var res = jsonDecode(response.body);
       return res;
     } catch (e) {

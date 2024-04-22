@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:kasir_mobile/interface/response_transaction_iterface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RequestTransaction {
@@ -27,7 +28,8 @@ class RequestTransaction {
 }
 
 class PostTransaction {
-  static post(double cash, List<RequestTransaction> items) async {
+  static Future<TransactionResponse> post(
+      double cash, List<RequestTransaction> items) async {
     try {
       var pref = await SharedPreferences.getInstance();
       var token = pref.getString('AccessToken');
@@ -38,8 +40,6 @@ class PostTransaction {
         "items": items.map((item) => item.toJson()).toList()
       };
 
-      print('check payload $transaction');
-
       var response = await http.post(Uri.https(domain, "api/transaction"),
           body: jsonEncode({"transaction": transaction}),
           headers: {
@@ -47,8 +47,8 @@ class PostTransaction {
             "Accept": "application/json",
             'Authorization': 'Bearer $token'
           });
-
-      return jsonDecode(response.body);
+      print(TransactionResponse.fromJson(jsonDecode(response.body)));
+      return TransactionResponse.fromJson(jsonDecode(response.body));
     } catch (e) {
       rethrow;
     }

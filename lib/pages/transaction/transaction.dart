@@ -173,20 +173,38 @@ class _TransactionState extends State<Transaction> {
                                       children: [
                                         GestureDetector(
                                           onTap: () {
-                                            setState(() {
-                                              if (transaction.isNotEmpty) {
-                                                final lastIndexs = transaction
-                                                    .lastIndexWhere((element) =>
-                                                        element.id ==
-                                                        snapshot.data!
-                                                            .data[index].id);
+                                            if (snapshot
+                                                    .data!.data[index].stock ==
+                                                0) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  duration: const Duration(
+                                                      seconds: 1),
+                                                  content: Text(
+                                                      'Stok ${snapshot.data!.data[index].name} kosong'),
+                                                  backgroundColor: Colors.red,
+                                                ),
+                                              );
+                                            } else {
+                                              setState(() {
+                                                if (transaction.isNotEmpty) {
+                                                  final lastIndexs = transaction
+                                                      .lastIndexWhere(
+                                                          (element) =>
+                                                              element.id ==
+                                                              snapshot
+                                                                  .data!
+                                                                  .data[index]
+                                                                  .id);
 
-                                                if (lastIndexs != -1) {
-                                                  transaction
-                                                      .removeAt(lastIndexs);
+                                                  if (lastIndexs != -1) {
+                                                    transaction
+                                                        .removeAt(lastIndexs);
+                                                  }
                                                 }
-                                              }
-                                            });
+                                              });
+                                            }
                                           },
                                           child: Container(
                                             margin: const EdgeInsets.only(
@@ -224,20 +242,36 @@ class _TransactionState extends State<Transaction> {
                                         ),
                                         GestureDetector(
                                           onTap: () {
-                                            setState(() {
-                                              transaction.add(
-                                                  TransactionData.set(
-                                                      id: snapshot
-                                                          .data!.data[index].id,
-                                                      name: snapshot.data!
-                                                          .data[index].name,
-                                                      price: snapshot
-                                                          .data!
-                                                          .data[index]
-                                                          .sellingPrice,
-                                                      remaining: snapshot.data!
-                                                          .data[index].stock));
-                                            });
+                                            if (snapshot
+                                                    .data!.data[index].stock ==
+                                                0) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  duration: const Duration(
+                                                      seconds: 5),
+                                                  content: Text(
+                                                      'Stok ${snapshot.data!.data[index].name} kosong'),
+                                                  backgroundColor: Colors.red,
+                                                ),
+                                              );
+                                            } else {
+                                              setState(() {
+                                                transaction.add(TransactionData.set(
+                                                    image:
+                                                        "https://$domain/storage/images/${snapshot.data!.data[index].image}",
+                                                    id: snapshot
+                                                        .data!.data[index].id,
+                                                    name: snapshot
+                                                        .data!.data[index].name,
+                                                    price: snapshot
+                                                        .data!
+                                                        .data[index]
+                                                        .sellingPrice,
+                                                    remaining: snapshot.data!
+                                                        .data[index].stock));
+                                              });
+                                            }
                                           },
                                           child: Container(
                                             margin: const EdgeInsets.only(

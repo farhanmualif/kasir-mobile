@@ -16,16 +16,16 @@ class FormAddProductPage extends StatefulWidget {
 
 class _FormAddProductPageState extends State<FormAddProductPage> {
   final _formKey = GlobalKey<FormState>();
-  final _namaBarangController = TextEditingController();
-  final _stokController = TextEditingController();
-  final _kodeController = TextEditingController();
-  final _hargaDasarController = TextEditingController();
-  final _hargaJualController = TextEditingController();
-  String _kategori = '';
+  final _productNameController = TextEditingController();
+  final _stockController = TextEditingController();
+  final _codeController = TextEditingController();
+  final _purchasePriceController = TextEditingController();
+  final _sellingPriceController = TextEditingController();
+  String _category = '';
 
   File? _selectedImage;
 
-  List<String> listKategori = ["Makanan", "Minuman", "Peralatan Mandi"];
+  List<String> listCategory = ["Makanan", "Minuman", "Peralatan Mandi"];
   bool _isLoading = false;
 
   postProduct() async {
@@ -35,11 +35,11 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
       });
       final post = await PostProduct.postProduct(
           image: _selectedImage,
-          name: _namaBarangController.text,
-          purchasePrice: int.parse(_hargaDasarController.text),
-          sellingPrice: int.parse(_hargaJualController.text),
-          stock: int.parse(_stokController.text));
-      // print('cek post $post');
+          name: _productNameController.text,
+          purchasePrice: int.parse(_purchasePriceController.text),
+          sellingPrice: int.parse(_sellingPriceController.text),
+          stock: int.parse(_stockController.text));
+     
       if (post['status'] == true) {
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => const Struk()));
@@ -161,7 +161,7 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                       const SizedBox(height: 10),
                       SizedBox(
                         child: TextFormField(
-                          controller: _namaBarangController,
+                          controller: _productNameController,
                           decoration: const InputDecoration(
                             isDense: true,
                             isCollapsed: true,
@@ -194,7 +194,7 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                                 const SizedBox(height: 10),
                                 SizedBox(
                                   child: TextFormField(
-                                    controller: _stokController,
+                                    controller: _stockController,
                                     keyboardType: TextInputType.number,
                                     decoration: const InputDecoration(
                                       isCollapsed: true,
@@ -226,7 +226,7 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                                 const SizedBox(height: 10),
                                 SizedBox(
                                   child: TextFormField(
-                                    controller: _kodeController,
+                                    controller: _codeController,
                                     decoration: const InputDecoration(
                                       isDense: true,
                                       isCollapsed: true,
@@ -268,7 +268,7 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                                 const SizedBox(height: 10),
                                 SizedBox(
                                   child: TextFormField(
-                                    controller: _hargaDasarController,
+                                    controller: _purchasePriceController,
                                     keyboardType: TextInputType.number,
                                     decoration: const InputDecoration(
                                         isDense: true,
@@ -300,7 +300,7 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                                 const SizedBox(height: 10),
                                 SizedBox(
                                   child: TextFormField(
-                                    controller: _hargaJualController,
+                                    controller: _sellingPriceController,
                                     keyboardType: TextInputType.number,
                                     decoration: const InputDecoration(
                                         isDense: true,
@@ -339,10 +339,10 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                                   Radius.circular(50),
                                 ),
                               )),
-                          value: _kategori.isNotEmpty ? _kategori : null,
+                          value: _category.isNotEmpty ? _category : null,
                           onChanged: (value) {
                             setState(() {
-                              _kategori = value!;
+                              _category = value!;
                             });
                           },
                           validator: (value) {
@@ -351,7 +351,7 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                             }
                             return null;
                           },
-                          items: listKategori
+                          items: listCategory
                               .map<DropdownMenuItem<String>>((String item) {
                             return DropdownMenuItem<String>(
                                 value: item, child: Text(item));

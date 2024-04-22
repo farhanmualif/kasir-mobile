@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kasir_mobile/interface/response_transaction_iterface.dart';
 import 'package:kasir_mobile/pages/transaction/payment_done.dart';
 import 'package:kasir_mobile/provider/post_transaction.dart';
 
@@ -21,7 +22,103 @@ class _PaymentState extends State<Payment> {
     super.initState();
   }
 
-  postTransaction() {}
+  Future<TransactionResponse> postTransactionData(
+      double nominal, List<RequestTransaction> transaction) async {
+    return await PostTransaction.post(nominal, transaction);
+  }
+
+  void createTransaction() async {
+    if (int.parse(nominal) < widget.totalPrice) {
+      const snackBar = SnackBar(
+        duration: Duration(seconds: 5),
+        content: Text("Nominal tidak boleh kurang dari total harga"),
+        backgroundColor: Colors.red,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+    List<RequestTransaction> transaction = [];
+    List<Map<String, dynamic>> groupedTransaction =
+        widget.listTransaction.values.toList();
+
+    int totalPayment = 0;
+    int change = int.parse(nominal) - widget.totalPrice;
+
+    for (var item in groupedTransaction) {
+      totalPayment = totalPayment +
+          ((item['price'] as num).toInt() * (item['count'] as num).toInt());
+      RequestTransaction requestTransaction = RequestTransaction(
+        idProduct: item['id'],
+        name: item['name'],
+        itemPrice: item['price'],
+        quantity: item['count'],
+      );
+      transaction.add(requestTransaction);
+    }
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return FutureBuilder<TransactionResponse>(
+          future: postTransactionData(double.parse(nominal), transaction),
+          builder: (BuildContext context,
+              AsyncSnapshot<TransactionResponse> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16.0),
+                  ],
+                ),
+              );
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else {
+              final result = snapshot.data!;
+              if (result.status == true) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PaymentDone(
+                        change: change,
+                        strukUrl: result.data?.noTransaction,
+                      ),
+                    ),
+                  );
+                });
+              } else if (result.data == null) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      duration: Duration(seconds: 5),
+                      content: Text('Gagal menambahkan data transaksi'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                });
+              } else {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      duration: const Duration(seconds: 5),
+                      content: Text(result.message.toString()),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                });
+              }
+              return Container(); // Tambahkan container kosong agar tidak ada error
+            }
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -130,68 +227,16 @@ class _PaymentState extends State<Payment> {
               },
             ),
             const SizedBox(height: 16.0),
-
             Container(
               width: 330,
               decoration: const BoxDecoration(
-                  color: Color(0xffFFCA45),
-                  borderRadius: BorderRadius.all(Radius.circular(5))),
+                color: Color(0xffFFCA45),
+                borderRadius: BorderRadius.all(
+                  Radius.circular(5),
+                ),
+              ),
               child: TextButton(
-                onPressed: () async {
-                  if (int.parse(nominal) < widget.totalPrice) {
-                    const snackBar = SnackBar(
-                      duration: Duration(seconds: 5),
-                      content:
-                          Text("Nominal tidak boleh kurang dari total harga"),
-                      backgroundColor: Colors.red,
-                    );
-
-                    // ignore: use_build_context_synchronously
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    return;
-                  }
-
-                  List<RequestTransaction> transaction = [];
-
-                  List<Map<String, dynamic>> groupedTransaction =
-                      widget.listTransaction.values.toList();
-
-                  int totalPayment = 0;
-                  int change = int.parse(nominal) - widget.totalPrice;
-
-                  for (var item in groupedTransaction) {
-                    totalPayment = totalPayment +
-                        ((item['price'] as num).toInt() *
-                            (item['count'] as num).toInt());
-                    RequestTransaction requestTransaction = RequestTransaction(
-                        idProduct: item['id'],
-                        name: item['name'],
-                        itemPrice: item['price'],
-                        quantity: item['count']);
-                    transaction.add(requestTransaction);
-                  }
-
-                  var postTransaction = await PostTransaction.post(
-                      double.parse(nominal), transaction);
-                  if (postTransaction['status'] == true) {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => PaymentDone(
-                                  change: change,
-                                )));
-                  } else {
-                    var snackBar = SnackBar(
-                      duration: const Duration(seconds: 5),
-                      content: Text(postTransaction['message'].toString()),
-                      backgroundColor: Colors.red,
-                    );
-
-                    // ignore: use_build_context_synchronously
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    return;
-                  }
-                },
+                onPressed: createTransaction,
                 child: const Text(
                   'BAYAR',
                   style: TextStyle(color: Colors.black),

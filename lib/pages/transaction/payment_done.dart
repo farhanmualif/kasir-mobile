@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:kasir_mobile/main.dart';
 import 'package:kasir_mobile/pages/struk.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:kasir_mobile/pages/transaction/transaction.dart';
 
 // ignore: must_be_immutable
 class PaymentDone extends StatelessWidget {
   int change;
-  PaymentDone({super.key, required this.change});
+  String? strukUrl;
+  var domain = dotenv.env['BASE_URL'];
+  PaymentDone({super.key, required this.change, this.strukUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +25,10 @@ class PaymentDone extends StatelessWidget {
           ),
           child: GestureDetector(
               onTap: () {
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => const MyApp()));
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => const Transaction(
+                          typeTransaction: "Penjualan",
+                        )));
               },
               child: const Icon(
                 Icons.done,
@@ -71,10 +76,12 @@ class PaymentDone extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xffFFCA45)),
                   onPressed: () {
+                    String url =
+                        "https://$domain/storage/invoices/invoice_$strukUrl.pdf";
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const Struk(),
+                        builder: (context) => Struk(url: url),
                       ),
                     );
                   },
