@@ -86,7 +86,7 @@ class _PaymentState extends State<Payment> {
                     MaterialPageRoute(
                       builder: (context) => PaymentDone(
                         change: change,
-                        strukUrl: result.data?.noTransaction,
+                        noTransaction: result.data?.noTransaction,
                       ),
                     ),
                   );

@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:kasir_mobile/pages/struk.dart';
+import 'package:kasir_mobile/pages/transaction/payment_done.dart';
 import 'package:kasir_mobile/provider/post_product.dart';
 
 class FormAddProductPage extends StatefulWidget {
@@ -39,10 +39,14 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
           purchasePrice: int.parse(_purchasePriceController.text),
           sellingPrice: int.parse(_sellingPriceController.text),
           stock: int.parse(_stockController.text));
-     
+
       if (post['status'] == true) {
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => const Struk()));
+            context,
+            MaterialPageRoute(
+                builder: (context) => PaymentDone(
+                      change: 0,
+                    )));
         // Navigator.of(context)
         //     .push(MaterialPageRoute(builder: (context) => const Struk()));
       } else {

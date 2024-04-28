@@ -7,12 +7,12 @@ class ReportPage extends StatelessWidget {
   ReportPage({super.key});
 
   final List<String> laporanList = [
-    'Penjualan Hari ini',
-    'Penjualan Bulan ini',
-    'Penjualan Tahun ini',
-    'Pembelian Hari ini',
-    'Pembelian Bulan ini',
-    'Pembelian Tahun ini',
+    'Penjualan Perhari',
+    'Penjualan Perbulan',
+    'Penjualan Pertahun',
+    'Pembelian Perhari',
+    'Pembelian Perbulan',
+    'Pembelian Pertahun',
   ];
 
   @override

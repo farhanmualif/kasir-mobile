@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kasir_mobile/interface/check_auth_interface.dart';
 import 'package:kasir_mobile/pages/auth/login_page.dart';
 import 'package:kasir_mobile/pages/home/home_app.dart';
 import 'package:kasir_mobile/provider/auth.dart';
@@ -31,8 +32,8 @@ class _SplashState extends State<Splash> {
       const Duration(seconds: 3),
       () {},
     );
-    var auth = await checkAuth();
-    if (auth['status'] == false && auth['message'] == 'uauthenticated') {
+    CheckAuthResponse auth = await checkAuth();
+    if (auth.status == false && auth.message == 'uauthenticated') {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => const LoginPage()));
     } else {

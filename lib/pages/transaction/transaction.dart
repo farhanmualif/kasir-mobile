@@ -97,7 +97,7 @@ class _TransactionState extends State<Transaction> {
               ),
             ),
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.70,
+            height: MediaQuery.of(context).size.height * 0.75758,
             child: FutureBuilder(
               future: GetProduct.getProduct(),
               builder: (context, snapshot) {

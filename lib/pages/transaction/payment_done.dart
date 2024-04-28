@@ -6,9 +6,9 @@ import 'package:kasir_mobile/pages/transaction/transaction.dart';
 // ignore: must_be_immutable
 class PaymentDone extends StatelessWidget {
   int change;
-  String? strukUrl;
+  String? noTransaction;
   var domain = dotenv.env['BASE_URL'];
-  PaymentDone({super.key, required this.change, this.strukUrl});
+  PaymentDone({super.key, required this.change, this.noTransaction});
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +77,7 @@ class PaymentDone extends StatelessWidget {
                       backgroundColor: const Color(0xffFFCA45)),
                   onPressed: () {
                     String url =
-                        "https://$domain/storage/invoices/invoice_$strukUrl.pdf";
+                        "https://$domain/storage/invoices/invoice_$noTransaction.pdf";
                     Navigator.push(
                       context,
                       MaterialPageRoute(

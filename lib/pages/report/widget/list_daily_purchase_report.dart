@@ -1,28 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:kasir_mobile/pages/struk.dart';
-import 'package:kasir_mobile/provider/get_daily_transaction.dart';
+import 'package:kasir_mobile/provider/get_daily_purchase.dart';
 
-class ListDailyReport extends StatefulWidget {
-  const ListDailyReport({super.key, required this.date});
-
+class ListDailyPurchaseReport extends StatefulWidget {
+  const ListDailyPurchaseReport({super.key, required this.date});
   final String date;
 
   @override
-  State<ListDailyReport> createState() => _ListDailyReportState();
+  State<ListDailyPurchaseReport> createState() =>
+      _ListDailyPurchaseReportState();
 }
 
-class _ListDailyReportState extends State<ListDailyReport> {
+class _ListDailyPurchaseReportState extends State<ListDailyPurchaseReport> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: GetDailyTransaction.getdailyTransaction(widget.date),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else {
-          if (snapshot.data?.dailyTransaction?.detailTransaction != null) {
+        future: GetDailyPurchase.getDailyPurchase(widget.date),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasData == false) {
+            return const Center(
+              child: Text('Data Belum Tersedia'),
+            );
+          } else if (snapshot.data == null || snapshot.data!.data == null) {
+            return const Text('data belum tersedia');
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else {
             return CustomScrollView(
               slivers: [
                 SliverList(
@@ -50,7 +56,7 @@ class _ListDailyReportState extends State<ListDailyReport> {
                                               fontWeight: FontWeight.w700),
                                         ),
                                         Text(
-                                          "${snapshot.data?.dailyTransaction?.totalTransactions}",
+                                          "${snapshot.data!.data!.itemsPurchasing.length}",
                                           style: const TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.w700),
@@ -75,13 +81,13 @@ class _ListDailyReportState extends State<ListDailyReport> {
                                       child: Column(
                                         children: [
                                           const Text(
-                                            "Keuntungan",
+                                            "Pengeluaran",
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.w700),
                                           ),
                                           Text(
-                                            "Rp. ${snapshot.data?.dailyTransaction?.totalRevenue}",
+                                            "Rp. ${snapshot.data!.data!.totalExpenditure}",
                                             style: const TextStyle(
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.w700),
@@ -92,45 +98,13 @@ class _ListDailyReportState extends State<ListDailyReport> {
                               ),
                             ),
                           ),
-                          Expanded(
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                  color: Color(0xff076A68),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5))),
-                              child: Column(
-                                children: [
-                                  TextButton(
-                                    onPressed: null,
-                                    child: Column(
-                                      children: [
-                                        const Text(
-                                          "Pendapatan",
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w700),
-                                        ),
-                                        Text(
-                                          "Rp. ${snapshot.data?.dailyTransaction?.totalProfit}",
-                                          style: const TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w700),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
                         ],
                       ),
                     ),
                     ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: snapshot
-                          .data!.dailyTransaction?.detailTransaction.length,
+                      itemCount: snapshot.data!.data!.itemsPurchasing.length,
                       itemBuilder: (context, index) {
                         return Container(
                           margin: const EdgeInsets.only(
@@ -153,8 +127,8 @@ class _ListDailyReportState extends State<ListDailyReport> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      snapshot.data!.dailyTransaction!
-                                          .detailTransaction[index].time,
+                                      snapshot.data!.data!
+                                          .itemsPurchasing[index].time,
                                       style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 10,
@@ -164,7 +138,7 @@ class _ListDailyReportState extends State<ListDailyReport> {
                                     Row(
                                       children: [
                                         Text(
-                                          snapshot.data!.dailyTransaction!.day,
+                                          "${snapshot.data!.data!.itemsPurchasing[index].day}",
                                           style: const TextStyle(
                                               fontSize: 30,
                                               fontWeight: FontWeight.bold),
@@ -175,14 +149,16 @@ class _ListDailyReportState extends State<ListDailyReport> {
                                           child: Column(
                                             children: [
                                               Text(
-                                                snapshot.data!.dailyTransaction!
+                                                snapshot
+                                                    .data!
+                                                    .data!
+                                                    .itemsPurchasing[index]
                                                     .month,
                                                 style: const TextStyle(
                                                     fontSize: 10),
                                               ),
                                               Text(
-                                                snapshot.data!.dailyTransaction!
-                                                    .year,
+                                                "${snapshot.data!.data!.itemsPurchasing[index].year}",
                                                 style: const TextStyle(
                                                     fontSize: 10),
                                               ),
@@ -208,62 +184,27 @@ class _ListDailyReportState extends State<ListDailyReport> {
                                           Container(
                                             margin: const EdgeInsets.only(
                                                 bottom: 3),
-                                            child: const Text("Pendapatan"),
+                                            child: const Text("Pengeluaran"),
                                           ),
                                           Text(
-                                            "Rp. ${snapshot.data!.dailyTransaction!.detailTransaction[index].revenue}",
+                                            "Rp. ${snapshot.data!.data!.itemsPurchasing[index].purchases}",
                                             style: const TextStyle(
                                                 fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
                                     ),
-                                    Container(
-                                      margin: const EdgeInsets.only(bottom: 8),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            margin: const EdgeInsets.only(
-                                                bottom: 3),
-                                            child: const Text("Keuntungan"),
-                                          ),
-                                          Text(
-                                            "Rp. ${snapshot.data!.dailyTransaction!.detailTransaction[index].profit}",
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Text(
-                                      "No. ${snapshot.data!.dailyTransaction!.detailTransaction[index].noTransaction}",
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    )
                                   ],
                                 ),
                               ),
-                              Expanded(
+                              const Expanded(
                                 flex: -1,
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Icon(
+                                    Icon(
                                       Icons.delete,
                                       color: Colors.red,
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const Struk()));
-                                      },
-                                      child: const Icon(
-                                          Icons.navigate_next_outlined),
                                     ),
                                   ],
                                 ),
@@ -277,13 +218,7 @@ class _ListDailyReportState extends State<ListDailyReport> {
                 ),
               ],
             );
-          } else {
-            return const Center(
-              child: Text("Belum ada Transaksi"),
-            );
           }
-        }
-      },
-    );
+        });
   }
 }

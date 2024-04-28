@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:kasir_mobile/interface/check_auth_interface.dart';
 import 'package:kasir_mobile/interface/user_interface.dart';
 import 'package:http/http.dart' as http;
 import 'package:kasir_mobile/main.dart';
@@ -91,14 +94,29 @@ class Auth {
     try {
       var pref = await SharedPreferences.getInstance();
       var token = pref.getString('AccessToken');
+      final httpClient = HttpClient();
+      httpClient.badCertificateCallback =
+          ((X509Certificate cert, String host, int port) => true);
+
       var response =
-          await http.get(Uri.https(domain,"api/check-auth"), headers: {
+          await http.get(Uri.https(domain, "api/check-auth"), headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
       });
-      var res = jsonDecode(response.body);
-      return res;
+
+      var responseJson = jsonDecode(response.body);
+      CheckAuthResponse res = CheckAuthResponse.fromJson(responseJson);
+
+      if (response.statusCode == 200) {
+        return res;
+      } else if (res.data == null) {
+        CheckAuthResponse failureResp =
+            CheckAuthResponse(status: false, message: "uauthenticated");
+        return failureResp;
+      } else {
+        throw Exception('Failed to load data');
+      }
     } catch (e) {
       return e;
     }
