@@ -54,9 +54,6 @@ class _TransactionState extends State<Transaction> {
                     child: const Icon(Icons.qr_code_scanner_outlined)),
                 Container(
                     margin: const EdgeInsets.only(right: 10),
-                    child: const Icon(Icons.add)),
-                Container(
-                    margin: const EdgeInsets.only(right: 10),
                     child: const Icon(Icons.search)),
               ],
             ),

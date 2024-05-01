@@ -30,8 +30,8 @@ class GetProduct {
                 id: categoryData['id'],
                 uuid: categoryData['uuid'],
                 name: categoryData['name'],
-                createdAt: categoryData['createdAt'],
-                updatedAt: categoryData['updatedAt']));
+                createdAt: categoryData['created_at'],
+                updatedAt: categoryData['updated_at']));
           }
         }
 

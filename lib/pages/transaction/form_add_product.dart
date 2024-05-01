@@ -3,7 +3,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kasir_mobile/interface/category_interface.dart';
 import 'package:kasir_mobile/pages/transaction/payment_done.dart';
+import 'package:kasir_mobile/provider/get_category.dart';
 import 'package:kasir_mobile/provider/post_product.dart';
 
 class FormAddProductPage extends StatefulWidget {
@@ -21,12 +23,14 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
   final _codeController = TextEditingController();
   final _purchasePriceController = TextEditingController();
   final _sellingPriceController = TextEditingController();
-  String _category = '';
+
+  String _idCategorySelected = '';
+  List<CategoryProduct> allCategories = [];
 
   File? _selectedImage;
 
-  List<String> listCategory = ["Makanan", "Minuman", "Peralatan Mandi"];
   bool _isLoading = false;
+  // late Map<String, dynamic> productCategories;
 
   postProduct() async {
     try {
@@ -38,10 +42,12 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
           name: _productNameController.text,
           purchasePrice: int.parse(_purchasePriceController.text),
           sellingPrice: int.parse(_sellingPriceController.text),
+          categoryId: int.parse(_idCategorySelected),
           stock: int.parse(_stockController.text));
 
       if (post['status'] == true) {
         Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
             context,
             MaterialPageRoute(
                 builder: (context) => PaymentDone(
@@ -74,6 +80,29 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
         _isLoading = false;
       });
     }
+  }
+
+  Future getAllCategory() async {
+    try {
+      final apiResponse = await GetCategory.getCategory();
+      if (apiResponse.status) {
+        final categories = apiResponse.data;
+        setState(() {
+          allCategories.addAll(categories!);
+        });
+      } else {
+        return ArgumentError("Terjadi error");
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getAllCategory();
+    // print("cek kategori: $productCategories");
   }
 
   @override
@@ -148,12 +177,13 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                                             child: const Icon(
                                                 Icons.image_search))),
                                     Expanded(
-                                        child: GestureDetector(
-                                            onTap: () {
-                                              _pickImageFromCamera();
-                                            },
-                                            child:
-                                                const Icon(Icons.camera_alt))),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          _pickImageFromCamera();
+                                        },
+                                        child: const Icon(Icons.camera_alt),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               )
@@ -333,33 +363,22 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                       const Text('kategori'),
                       const SizedBox(height: 10.0),
                       SizedBox(
-                        child: DropdownButtonFormField<String>(
-                          decoration: const InputDecoration(
-                              isCollapsed: true,
-                              isDense: true,
-                              contentPadding: EdgeInsets.all(10),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(50),
-                                ),
-                              )),
-                          value: _category.isNotEmpty ? _category : null,
-                          onChanged: (value) {
+                        child: DropdownButton<String>(
+                          hint: const Text('Pilih Kategori'),
+                          items: allCategories.map((item) {
+                            return DropdownMenuItem<String>(
+                              value: "${item.id}",
+                              child: Text(item.name),
+                            );
+                          }).toList(),
+                          onChanged: (newVal) {
                             setState(() {
-                              _category = value!;
+                              _idCategorySelected = newVal!;
                             });
                           },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Kategori harus dipilih';
-                            }
-                            return null;
-                          },
-                          items: listCategory
-                              .map<DropdownMenuItem<String>>((String item) {
-                            return DropdownMenuItem<String>(
-                                value: item, child: Text(item));
-                          }).toList(),
+                          value: _idCategorySelected.isNotEmpty
+                              ? _idCategorySelected
+                              : null,
                         ),
                       ),
                       const SizedBox(

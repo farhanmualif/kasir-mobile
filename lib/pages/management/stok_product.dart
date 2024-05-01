@@ -14,10 +14,9 @@ class StokProductManagement extends StatefulWidget {
 }
 
 class _StokProductManagementState extends State<StokProductManagement> {
-  // final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  // final TextEditingController _searchController = TextEditingController();
-
   var domain = dotenv.env['BASE_URL'];
+  List<Product> findProduct = [];
+  bool isLoading = true;
 
   Future<List<Product>> getProduct() async {
     try {
@@ -26,6 +25,28 @@ class _StokProductManagementState extends State<StokProductManagement> {
     } catch (e) {
       rethrow;
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getProduct().then((value) {
+      setState(() {
+        findProduct = value;
+        isLoading = false;
+      });
+    });
+  }
+
+  void onQueryChanged(String query) {
+    getProduct().then((products) {
+      setState(() {
+        findProduct = products
+            .where(
+                (item) => item.name.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      });
+    });
   }
 
   @override
@@ -54,6 +75,7 @@ class _StokProductManagementState extends State<StokProductManagement> {
                 ),
                 Expanded(
                   child: TextField(
+                    onChanged: onQueryChanged,
                     decoration: InputDecoration(
                       hintText: "Cari Produk",
                       prefixIcon: const Icon(Icons.search),
@@ -79,48 +101,13 @@ class _StokProductManagementState extends State<StokProductManagement> {
               ],
             ),
           ),
-          FutureBuilder(
-            future: getProduct(),
-            builder: (context, snapshot) {
-              var foundProduct = snapshot.data!;
-
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              } else if (snapshot.hasData == false) {
-                return const Center(
-                  child: Text('Data Belum Tersedia'),
-                );
-              } else if (snapshot.data == null) {
-                return const Text('data belum tersedia');
-              } else if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}');
-              } else {
-                void filterProducts(String query) {
-                  List<Product> filteredProducts = [];
-
-                  // Ambil data produk dari snapshot
-                  if (snapshot.hasData) {
-                    final products = snapshot.data!;
-
-                    // Lakukan filtering berdasarkan nama produk
-                    filteredProducts = products.where((product) {
-                      final productName = product.name.toLowerCase();
-                      final input = query.toLowerCase();
-                      return productName.contains(input);
-                    }).toList();
-                  }
-
-                  // Perbarui daftar produk yang ditampilkan
-                  setState(() {
-                    foundProduct = filteredProducts;
-                  });
-                }
-
-                return Expanded(
-                  child: ListView.builder(
-                    itemCount: foundProduct.length,
+          Expanded(
+            child: isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : ListView.builder(
+                    itemCount: findProduct.length,
                     itemBuilder: (context, index) {
                       return Container(
                         margin: const EdgeInsets.only(
@@ -130,7 +117,7 @@ class _StokProductManagementState extends State<StokProductManagement> {
                             Expanded(
                               child: Image(
                                 image: NetworkImage(
-                                  "https://$domain/storage/images/${foundProduct[index].image}",
+                                  "https://$domain/storage/images/${findProduct[index].image}",
                                 ),
                                 height: 70,
                                 width: 70,
@@ -145,17 +132,17 @@ class _StokProductManagementState extends State<StokProductManagement> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    foundProduct[index].name,
+                                    findProduct[index].name,
                                     style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold),
                                   ),
                                   Text(
-                                    "kode: ${foundProduct[index].barcode ?? "0"}",
+                                    "kode: ${findProduct[index].barcode ?? "0"}",
                                     style: const TextStyle(fontSize: 16),
                                   ),
                                   Text(
-                                    "Hrg dsr: Rp. ${foundProduct[index].purchasePrice}",
+                                    "Hrg dsr: Rp. ${findProduct[index].purchasePrice}",
                                     style: const TextStyle(fontSize: 16),
                                   )
                                 ],
@@ -168,19 +155,19 @@ class _StokProductManagementState extends State<StokProductManagement> {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Text(
-                                    "Stok: ${foundProduct[index].stock}",
+                                    "Stok: ${findProduct[index].stock}",
                                     style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold),
                                   ),
                                   Text(
-                                    "Rp. ${foundProduct[index].sellingPrice}",
+                                    "Rp. ${findProduct[index].sellingPrice}",
                                     style: const TextStyle(fontSize: 13),
                                   ),
                                   GestureDetector(
                                       onTap: () async {
                                         var dialog = UpdateDialog(
-                                            dataProduct: foundProduct[index]);
+                                            dataProduct: findProduct[index]);
                                         dialog.showEditingFormDialog(context);
                                       },
                                       child: const Icon(Icons.edit_square))
@@ -192,9 +179,6 @@ class _StokProductManagementState extends State<StokProductManagement> {
                       );
                     },
                   ),
-                );
-              }
-            },
           )
         ],
       ),

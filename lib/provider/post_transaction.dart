@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'package:kasir_mobile/interface/response_transaction_iterface.dart';
+import 'package:kasir_mobile/interface/response_transaction_interface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RequestTransaction {

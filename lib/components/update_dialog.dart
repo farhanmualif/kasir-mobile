@@ -5,6 +5,7 @@ class UpdateDialog {
   UpdateDialog({required this.dataProduct});
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String _typeChange = "";
+  // ignore: prefer_typing_uninitialized_variables
   var dataProduct;
 
   Future<Widget> showEditingFormDialog(
@@ -164,8 +165,7 @@ class UpdateDialog {
                               SizedBox(
                                 width: MediaQuery.of(context).size.width * 0.33,
                                 child: TextFormField(
-                                  initialValue:
-                                      "${dataProduct.purchasePrice}",
+                                  initialValue: "${dataProduct.purchasePrice}",
                                   decoration: const InputDecoration(
                                     prefixText: "Rp. ",
                                     hintStyle: TextStyle(fontSize: 15),
@@ -283,6 +283,4 @@ class UpdateDialog {
       },
     );
   }
-
-  
 }

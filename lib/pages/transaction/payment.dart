@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kasir_mobile/interface/response_transaction_iterface.dart';
+import 'package:kasir_mobile/interface/response_transaction_interface.dart';
 import 'package:kasir_mobile/pages/transaction/payment_done.dart';
 import 'package:kasir_mobile/provider/post_transaction.dart';
 
