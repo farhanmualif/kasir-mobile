@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:kasir_mobile/pages/management/add_category.dart';
 import 'package:kasir_mobile/pages/management/edit_category.dart';
+import 'package:kasir_mobile/provider/delete_category.dart';
+import 'package:kasir_mobile/provider/get_category.dart';
 
-class ProductCategory extends StatelessWidget {
+class ProductCategory extends StatefulWidget {
   const ProductCategory({super.key});
 
+  @override
+  State<ProductCategory> createState() => _ProductCategoryState();
+}
+
+class _ProductCategoryState extends State<ProductCategory> {
+  bool _isLoading = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,54 +59,170 @@ class ProductCategory extends StatelessWidget {
                         ),
                       ),
                     ),
+                    Container(
+                      margin: const EdgeInsets.only(left: 10, right: 10),
+                      child: IconButton(
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => const AddCategory()));
+                          },
+                          icon: const Icon(Icons.add)),
+                    )
                   ],
                 ),
               ),
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.7933,
-                child: ListView.builder(
-                  itemCount: 50,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: const Text("shampo"),
-                      subtitle: const Row(
-                        children: [
-                          Expanded(
-                            flex: 7,
-                            child: Row(
+                child: FutureBuilder(
+                  future: GetCategory.getCategory(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text('${snapshot.error}');
+                    } else if (!snapshot.hasData) {
+                      return const Text('tidak ada data');
+                    } else if (snapshot.data!.data == null) {
+                      return const Text('data kategori tersedia');
+                    } else {
+                      return ListView.builder(
+                        itemCount: snapshot.data!.data!.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(snapshot.data!.data![index].name),
+                            subtitle: Row(
                               children: [
-                                Expanded(child: Text('sisa 20')),
-                                Expanded(child: Text('Modal: Rp. 20000')),
+                                Expanded(
+                                  flex: 7,
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                          child: Text(
+                                              'sisa: ${snapshot.data!.data![index].remainingStock}')),
+                                      Expanded(
+                                          child: Text(
+                                              'Modal: ${snapshot.data!.data![index].capital}')),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
-                          ),
-                        ],
-                      ),
-                      trailing: Column(
-                        children: [
-                          Expanded(
-                              child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const CategoryModifier()));
-                                  },
-                                  child: const Icon(Icons.edit_square))),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                debugPrint("deleted clicked");
-                              },
-                              child: const Icon(
-                                Icons.delete,
-                                color: Colors.red,
-                              ),
+                            trailing: Column(
+                              children: [
+                                Expanded(
+                                    child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      CategoryModifier(
+                                                        categoryUUID: snapshot
+                                                            .data!
+                                                            .data![index]
+                                                            .uuid!,
+                                                        categoryName: snapshot
+                                                            .data!
+                                                            .data![index]
+                                                            .name,
+                                                      )));
+                                        },
+                                        child: const Icon(Icons.edit_square))),
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => _isLoading
+                                            ? const Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              )
+                                            : AlertDialog(
+                                                title: const Text(
+                                                    'Konfirmasi Hapus'),
+                                                content: const Text(
+                                                    'Apakah Anda yakin ingin menghapus kategori ini?'),
+                                                actions: [
+                                                  TextButton(
+                                                    child: const Text('Batal'),
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                  ),
+                                                  TextButton(
+                                                    child: const Text('Hapus'),
+                                                    onPressed: () async {
+                                                      setState(() {
+                                                        _isLoading = true;
+                                                      });
+                                                      try {
+                                                        var response =
+                                                            await deleteCategory(
+                                                                snapshot
+                                                                    .data!
+                                                                    .data![
+                                                                        index]
+                                                                    .uuid!);
+                                                        if (response[
+                                                                "status"] ==
+                                                            false) {
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                                  SnackBar(
+                                                            duration:
+                                                                const Duration(
+                                                                    seconds: 5),
+                                                            content: Text(
+                                                                response[
+                                                                    'message']),
+                                                            backgroundColor:
+                                                                Colors.red,
+                                                          ));
+                                                        } else {
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                                  SnackBar(
+                                                            duration:
+                                                                const Duration(
+                                                                    seconds: 5),
+                                                            content: Text(
+                                                                response[
+                                                                    'message']),
+                                                            backgroundColor:
+                                                                Colors.green,
+                                                          ));
+                                                        }
+                                                      } catch (e) {
+                                                        rethrow;
+                                                      }
+                                                      setState(() {
+                                                        _isLoading = false;
+                                                      });
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                      );
+                                    },
+                                    child: const Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                )
+                              ],
                             ),
-                          )
-                        ],
-                      ),
-                    );
+                          );
+                        },
+                      );
+                    }
                   },
                 ),
               )
@@ -106,5 +231,14 @@ class ProductCategory extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future deleteCategory(String uuid) async {
+    try {
+      var response = await DeleteCategory.delete(uuid);
+      return {"status": response.status, "message": response.message};
+    } catch (e) {
+      rethrow;
+    }
   }
 }

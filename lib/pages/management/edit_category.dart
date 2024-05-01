@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:kasir_mobile/provider/update_category.dart';
 
 class CategoryModifier extends StatefulWidget {
-  const CategoryModifier({super.key});
+  const CategoryModifier(
+      {super.key, required this.categoryUUID, required this.categoryName});
+
+  final String categoryUUID;
+  final String categoryName;
 
   @override
   // ignore: library_private_types_in_public_api
@@ -9,7 +14,8 @@ class CategoryModifier extends StatefulWidget {
 }
 
 class _CategoryModifierState extends State<CategoryModifier> {
-  final _controller = TextEditingController();
+  final _newNameController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -32,13 +38,14 @@ class _CategoryModifierState extends State<CategoryModifier> {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 37),
             TextField(
-              controller: _controller,
-              decoration: const InputDecoration(
+              controller: _newNameController,
+              decoration: InputDecoration(
                 labelText: 'Masukkan Nama Kategori',
+                hintText: widget.categoryName,
                 isCollapsed: true,
                 isDense: true,
-                contentPadding: EdgeInsets.all(10),
-                border: OutlineInputBorder(
+                contentPadding: const EdgeInsets.all(10),
+                border: const OutlineInputBorder(
                   borderSide: BorderSide(width: 1),
                 ),
               ),
@@ -50,17 +57,60 @@ class _CategoryModifierState extends State<CategoryModifier> {
                   color: Color(0xff076A68),
                   borderRadius: BorderRadius.all(Radius.circular(10))),
               child: TextButton(
-                onPressed: () {
-                  // Handle save action here
-                  debugPrint('Kategori baru : ${_controller.text}');
+                onPressed: () async {
+                  try {
+                    setState(() {
+                      _isLoading = true;
+                    });
+                    var response = await updateCategory();
+                    setState(() {
+                      _isLoading = false;
+                    });
+                    if (response["sattus"] == false) {
+                      // ignore: use_build_context_synchronously
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        duration: const Duration(seconds: 5),
+                        content: Text(response['message']),
+                        backgroundColor: Colors.red,
+                      ));
+                    } else {
+                      // ignore: use_build_context_synchronously
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        duration: const Duration(seconds: 5),
+                        content: Text(response['message']),
+                        backgroundColor: Colors.green,
+                      ));
+                    }
+                  } catch (e) {
+                    rethrow;
+                  }
                 },
-                child:
-                    const Text('Simpan', style: TextStyle(color: Colors.white)),
+                child: _isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Text('Simpan',
+                        style: TextStyle(color: Colors.white)),
               ),
             )
           ],
         ),
       ),
     );
+  }
+
+  Future updateCategory() async {
+    try {
+      var respose = await UpdateCategory.post(
+          widget.categoryUUID, _newNameController.text);
+      return {
+        "status": respose.status,
+        "message": respose.message,
+      };
+    } catch (e) {
+      return e;
+    }
   }
 }
