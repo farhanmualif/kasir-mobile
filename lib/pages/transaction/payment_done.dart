@@ -7,8 +7,13 @@ import 'package:kasir_mobile/pages/transaction/transaction.dart';
 class PaymentDone extends StatelessWidget {
   int change;
   String? noTransaction;
+  String typeTransaction;
   var domain = dotenv.env['BASE_URL'];
-  PaymentDone({super.key, required this.change, this.noTransaction});
+  PaymentDone(
+      {super.key,
+      required this.typeTransaction,
+      required this.change,
+      this.noTransaction});
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +31,8 @@ class PaymentDone extends StatelessWidget {
           child: GestureDetector(
               onTap: () {
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => const Transaction(
-                          typeTransaction: "Penjualan",
+                    builder: (context) => Transaction(
+                          typeTransaction: typeTransaction,
                         )));
               },
               child: const Icon(

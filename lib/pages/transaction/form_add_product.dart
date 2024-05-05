@@ -42,7 +42,9 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
           name: _productNameController.text,
           purchasePrice: int.parse(_purchasePriceController.text),
           sellingPrice: int.parse(_sellingPriceController.text),
-          categoryId: int.parse(_idCategorySelected),
+          categoryId: _idCategorySelected.isNotEmpty
+              ? int.tryParse(_idCategorySelected) ?? 0
+              : null,
           stock: int.parse(_stockController.text));
 
       if (post['status'] == true) {
@@ -52,6 +54,7 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
             MaterialPageRoute(
                 builder: (context) => PaymentDone(
                       change: 0,
+                      typeTransaction: "Pembelian",
                     )));
         // Navigator.of(context)
         //     .push(MaterialPageRoute(builder: (context) => const Struk()));
