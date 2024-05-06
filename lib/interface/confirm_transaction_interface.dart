@@ -5,8 +5,11 @@ class ConfirmTransactionInterface extends TransactionData {
       {required super.id,
       required super.name,
       required super.price,
+      required super.uuid,
+      required super.barcode,
       required super.remaining,
       required super.image,
+      required super.purcahsePrice,
       required totalTotalCount})
       : super.set();
 }

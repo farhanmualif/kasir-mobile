@@ -10,6 +10,7 @@ class Product {
   double sellingPrice;
   double purchasePrice;
   String image;
+
   DateTime createdAt;
   DateTime updatedAt;
 
@@ -29,4 +30,21 @@ class Product {
     required this.updatedAt,
     required this.category,
   });
+
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      id: json['id'],
+      uuid: json['uuid'],
+      name: json['name'],
+      category: json['category'],
+      image: json['image'],
+      link: json['link'],
+      purchasePrice: json['purchase_price'],
+      sellingPrice: json['selling_price'],
+      stock: json['stock'],
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
+      
+    );
+  }
 }

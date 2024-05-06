@@ -1,15 +1,21 @@
 class TransactionData {
   int id;
+  String uuid;
   String name;
+  String? barcode;
   double price;
+  double purcahsePrice;
   int remaining;
   int count;
   String image;
   TransactionData.set(
       {required this.id,
+      required this.uuid,
       required this.name,
       required this.image,
       required this.price,
+      required this.purcahsePrice,
+      required this.barcode,
       this.count = 0,
       required this.remaining});
 

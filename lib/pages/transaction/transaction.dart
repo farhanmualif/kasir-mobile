@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kasir_mobile/interface/product_interface.dart';
 import 'package:kasir_mobile/interface/transaction_interface.dart';
 import 'package:kasir_mobile/pages/home/home_app.dart';
-import 'package:kasir_mobile/pages/home/home_body.dart';
 import 'package:kasir_mobile/pages/transaction/confirm_transaction.dart';
 import 'package:kasir_mobile/pages/transaction/form_add_product.dart';
 import 'package:kasir_mobile/provider/get_product.dart';
@@ -126,7 +124,6 @@ class _TransactionState extends State<Transaction> {
                 ],
               ),
             ),
-            // typeTransactionPembelian Barang
             if (widget.typeTransaction == "Pembelian Barang")
               GestureDetector(
                 onTap: () {
@@ -237,7 +234,9 @@ class _TransactionState extends State<Transaction> {
                                           GestureDetector(
                                             onTap: () {
                                               if (findProduct[index].stock ==
-                                                  0) {
+                                                      0 &&
+                                                  widget.typeTransaction ==
+                                                      "Transaksi") {
                                                 ScaffoldMessenger.of(context)
                                                     .showSnackBar(
                                                   SnackBar(
@@ -305,7 +304,9 @@ class _TransactionState extends State<Transaction> {
                                           GestureDetector(
                                             onTap: () {
                                               if (findProduct[index].stock ==
-                                                  0) {
+                                                      0 &&
+                                                  widget.typeTransaction ==
+                                                      "Transaksi") {
                                                 ScaffoldMessenger.of(context)
                                                     .showSnackBar(
                                                   SnackBar(
@@ -318,21 +319,25 @@ class _TransactionState extends State<Transaction> {
                                                 );
                                               } else {
                                                 setState(() {
-                                                  transaction.add(
-                                                      TransactionData.set(
-                                                          image:
-                                                              "https://$domain/storage/images/${findProduct[index].image}",
-                                                          id: findProduct[index]
-                                                              .id,
-                                                          name:
-                                                              findProduct[index]
-                                                                  .name,
-                                                          price:
-                                                              findProduct[index]
-                                                                  .sellingPrice,
-                                                          remaining:
-                                                              findProduct[index]
-                                                                  .stock));
+                                                  transaction.add(TransactionData.set(
+                                                      purcahsePrice:
+                                                          findProduct[index]
+                                                              .purchasePrice,
+                                                      barcode:
+                                                          findProduct[index]
+                                                              .barcode,
+                                                      uuid: findProduct[index]
+                                                          .uuid,
+                                                      image:
+                                                          "https://$domain/storage/images/${findProduct[index].image}",
+                                                      id: findProduct[index].id,
+                                                      name: findProduct[index]
+                                                          .name,
+                                                      price: findProduct[index]
+                                                          .sellingPrice,
+                                                      remaining:
+                                                          findProduct[index]
+                                                              .stock));
                                                 });
                                               }
                                             },
@@ -359,7 +364,7 @@ class _TransactionState extends State<Transaction> {
                           ),
                     Container(
                       alignment: Alignment.bottomCenter,
-                      margin: const EdgeInsets.only(bottom: 20),
+                      margin: const EdgeInsets.only(bottom: 80),
                       child: Container(
                         decoration: const BoxDecoration(
                             color: Color(0xffFFCA45),
@@ -375,6 +380,7 @@ class _TransactionState extends State<Transaction> {
                                 MaterialPageRoute(
                                   builder: (context) => ConfirmTransaction(
                                     listTransaction: transaction,
+                                    typeTransaction: widget.typeTransaction,
                                   ),
                                 ),
                               );
@@ -390,11 +396,14 @@ class _TransactionState extends State<Transaction> {
                                     fontWeight: FontWeight.bold,
                                     color: Color(0xff000000)),
                               )),
-                              const Expanded(
+                              Expanded(
                                   flex: -1,
                                   child: Text(
-                                    "Lanjut",
-                                    style: TextStyle(color: Color(0xff000000)),
+                                    widget.typeTransaction == "Pembelian Barang"
+                                        ? "Update"
+                                        : "Lanjut",
+                                    style: const TextStyle(
+                                        color: Color(0xff000000)),
                                   )),
                               const Expanded(
                                 flex: -1,
