@@ -30,10 +30,13 @@ class PaymentDone extends StatelessWidget {
           ),
           child: GestureDetector(
               onTap: () {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
                     builder: (context) => Transaction(
-                          typeTransaction: typeTransaction,
-                        )));
+                      typeTransaction: typeTransaction,
+                    ),
+                  ),
+                );
               },
               child: const Icon(
                 Icons.done,

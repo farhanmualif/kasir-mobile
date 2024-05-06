@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kasir_mobile/interface/category_interface.dart';
 import 'package:kasir_mobile/pages/transaction/payment_done.dart';
@@ -23,6 +25,7 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
   final _codeController = TextEditingController();
   final _purchasePriceController = TextEditingController();
   final _sellingPriceController = TextEditingController();
+  late String? setBarcodeResult;
 
   String _idCategorySelected = '';
   List<CategoryProduct> allCategories = [];
@@ -31,6 +34,21 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
 
   bool _isLoading = false;
   // late Map<String, dynamic> productCategories;
+
+  Future<void> scanBarcode() async {
+    String barcodeScanRes;
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          '#ff6666', 'Batal', true, ScanMode.BARCODE);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version';
+    }
+    if (!mounted) return;
+    setState(() {
+      setBarcodeResult = barcodeScanRes;
+      
+    });
+  }
 
   postProduct() async {
     try {
@@ -184,7 +202,11 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                                         onTap: () {
                                           _pickImageFromCamera();
                                         },
-                                        child: const Icon(Icons.camera_alt),
+                                        child: GestureDetector(
+                                          onTap: scanBarcode,
+                                          child: const Icon(
+                                              Icons.qr_code_scanner_outlined),
+                                        ),
                                       ),
                                     ),
                                   ],

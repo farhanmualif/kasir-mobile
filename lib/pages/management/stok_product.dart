@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kasir_mobile/components/update_dialog.dart';
+import 'package:kasir_mobile/interface/api_response.dart';
 import 'package:kasir_mobile/interface/product_interface.dart';
+import 'package:kasir_mobile/provider/delete_product.dart';
 import 'package:kasir_mobile/provider/get_product.dart';
 
 class StokProductManagement extends StatefulWidget {
@@ -22,6 +24,17 @@ class _StokProductManagementState extends State<StokProductManagement> {
     try {
       var response = await GetProduct.getProduct(); //
       return response.data;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<ApiResponse> deleteProduct(String uuid) async {
+    try {
+      var response = await DeleteProduct.delete(uuid);
+      var resApi =
+          ApiResponse(status: response.status, message: response.message);
+      return resApi;
     } catch (e) {
       rethrow;
     }
@@ -164,13 +177,101 @@ class _StokProductManagementState extends State<StokProductManagement> {
                                     "Rp. ${findProduct[index].sellingPrice}",
                                     style: const TextStyle(fontSize: 13),
                                   ),
-                                  GestureDetector(
-                                      onTap: () async {
-                                        var dialog = UpdateDialog(
-                                            dataProduct: findProduct[index]);
-                                        dialog.showEditingFormDialog(context);
-                                      },
-                                      child: const Icon(Icons.edit_square))
+                                  Row(
+                                    children: [
+                                      GestureDetector(
+                                          onTap: () async {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return isLoading
+                                                    ? const CircularProgressIndicator()
+                                                    : AlertDialog(
+                                                        title: const Text(
+                                                            "Konfirmasi Hapus"),
+                                                        content: Text(
+                                                            "Hapus ${findProduct[index].name}?"),
+                                                        actions: [
+                                                          TextButton(
+                                                              onPressed:
+                                                                  () async {
+                                                                setState(() {
+                                                                  isLoading =
+                                                                      true;
+                                                                });
+                                                                var response =
+                                                                    await deleteProduct(
+                                                                        findProduct[index]
+                                                                            .uuid);
+                                                                setState(() {
+                                                                  isLoading =
+                                                                      false;
+                                                                });
+                                                                if (!response
+                                                                    .status) {
+                                                                  ScaffoldMessenger.of(
+                                                                          context)
+                                                                      .showSnackBar(
+                                                                    const SnackBar(
+                                                                      duration: Duration(
+                                                                          seconds:
+                                                                              1),
+                                                                      content: Text(
+                                                                          'terjadi kesalahan'),
+                                                                      backgroundColor:
+                                                                          Colors
+                                                                              .red,
+                                                                    ),
+                                                                  );
+                                                                } else {
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
+                                                                  ScaffoldMessenger.of(
+                                                                          context)
+                                                                      .showSnackBar(
+                                                                    const SnackBar(
+                                                                      duration: Duration(
+                                                                          seconds:
+                                                                              1),
+                                                                      content: Text(
+                                                                          'berhasil menhapus data'),
+                                                                      backgroundColor:
+                                                                          Colors
+                                                                              .green,
+                                                                    ),
+                                                                  );
+                                                                }
+                                                              },
+                                                              child: const Text(
+                                                                  "Ya")),
+                                                          TextButton(
+                                                              onPressed: () =>
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop(),
+                                                              child: const Text(
+                                                                  "Batal"))
+                                                        ],
+                                                      );
+                                              },
+                                            );
+                                          },
+                                          child: const Icon(
+                                            Icons.delete,
+                                            color: Colors.red,
+                                          )),
+                                      GestureDetector(
+                                          onTap: () async {
+                                            var dialog = UpdateDialog(
+                                                dataProduct:
+                                                    findProduct[index]);
+                                            dialog
+                                                .showEditingFormDialog(context);
+                                          },
+                                          child: const Icon(Icons.edit_square)),
+                                    ],
+                                  )
                                 ],
                               ),
                             ),
