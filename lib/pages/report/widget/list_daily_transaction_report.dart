@@ -23,10 +23,22 @@ class _ListDailyTransactionReportState
       future: GetDailyTransaction.getdailyTransaction(widget.date),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasData == false) {
+            return const Center(
+              child: Text('Data Belum Tersedia'),
+            );
+          } else if (snapshot.data == null || snapshot.data!.dailyTransaction == null) {
+            return const Center(
+              child: Text('data belum tersedia'),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          } else {
           if (snapshot.data?.dailyTransaction?.detailTransaction != null) {
             return CustomScrollView(
               slivers: [
@@ -293,7 +305,7 @@ class _ListDailyTransactionReportState
             );
           } else {
             return const Center(
-              child: Text("Belum ada Transaksi"),
+              child: Text("data belum tersedia"),
             );
           }
         }

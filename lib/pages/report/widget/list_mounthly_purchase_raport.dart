@@ -21,18 +21,22 @@ class _ListMounthlyPurchaseReport extends State<ListMounthlyPurchaseReport> {
       future: GetMonthlyPurchase.getMonthlyTransaction(widget.date),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (snapshot.hasData == false) {
-          return const Center(
-            child: Text('Data Belum Tersedia'),
-          );
-        } else if (snapshot.data == null || snapshot.data!.data == null) {
-          return const Text('data belum tersedia');
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasData == false) {
+            return const Center(
+              child: Text('Data Belum Tersedia'),
+            );
+          } else if (snapshot.data == null || snapshot.data!.data == null) {
+            return const Center(
+              child: Text('data belum tersedia'),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          }  else {
           return CustomScrollView(
             slivers: [
               SliverList(

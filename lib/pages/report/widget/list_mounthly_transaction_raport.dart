@@ -24,10 +24,22 @@ class _ListMounthlyTransactionRaportState
       future: GetMonthlyTransaction.getMonthlyTransaction(widget.date),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasData == false) {
+            return const Center(
+              child: Text('Data Belum Tersedia'),
+            );
+          } else if (snapshot.data == null || snapshot.data!.data == null) {
+            return const Center(
+              child: Text('data belum tersedia'),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          }  else {
           if (snapshot.hasData) {
             return CustomScrollView(
               slivers: [
@@ -326,13 +338,17 @@ class _ListMounthlyTransactionRaportState
                               },
                             ),
                           )
-                        : const Text("Belum ada data"),
+                        : const Center(
+                          child: Text("Data belum tersedia"),
+                        ),
                   ]),
                 ),
               ],
             );
           } else {
-            return const Text("Belum ada data");
+            return const Center(
+                          child: Text("Data belum tersedia"),
+                        );
           }
         }
       },

@@ -25,9 +25,13 @@ class _ListDailyPurchaseReportState extends State<ListDailyPurchaseReport> {
               child: Text('Data Belum Tersedia'),
             );
           } else if (snapshot.data == null || snapshot.data!.data == null) {
-            return const Text('data belum tersedia');
+            return const Center(
+              child: Text('data belum tersedia'),
+            );
           } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
           } else {
             return CustomScrollView(
               slivers: [

@@ -4,7 +4,8 @@ import 'package:kasir_mobile/pages/report/monthly_report.dart';
 import 'package:kasir_mobile/provider/get_year_transaction.dart';
 
 class ListAnualTransactionReport extends StatefulWidget {
-  const ListAnualTransactionReport({super.key, required this.typeRaport, required this.date});
+  const ListAnualTransactionReport(
+      {super.key, required this.typeRaport, required this.date});
 
   final String typeRaport;
   final String? date;
@@ -31,9 +32,13 @@ class _ListAnualTransactionReportState
             child: Text('Data Belum Tersedia'),
           );
         } else if (snapshot.data == null || snapshot.data!.data == null) {
-          return const Text('data belum tersedia');
+          return const Center(
+            child: Text('data belum tersedia'),
+          );
         } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
+          return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
         } else {
           return CustomScrollView(
             slivers: [
