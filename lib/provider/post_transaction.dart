@@ -40,14 +40,13 @@ class PostTransaction {
         "items": items.map((item) => item.toJson()).toList()
       };
 
-      var response = await http.post(Uri.https(domain, "api/transaction"),
+      var response = await http.post(Uri.http(domain, "api/transaction"),
           body: jsonEncode({"transaction": transaction}),
           headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
             'Authorization': 'Bearer $token'
           });
-      print(TransactionResponse.fromJson(jsonDecode(response.body)));
       return TransactionResponse.fromJson(jsonDecode(response.body));
     } catch (e) {
       rethrow;

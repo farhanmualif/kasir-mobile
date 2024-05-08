@@ -13,7 +13,7 @@ class DeleteProduct {
       var domain = dotenv.env["BASE_URL"]!;
 
       var response =
-          await http.delete(Uri.https(domain, "api/products/$uuid"), headers: {
+          await http.delete(Uri.http(domain, "api/products/$uuid"), headers: {
         "Content-Type": "application/json",
         "Accept": "application/json",
         'Authorization': 'Bearer $token'

@@ -17,7 +17,7 @@ class PostCategory {
         "name": name,
       };
 
-      var response = await http.post(Uri.https(domain, "api/category"),
+      var response = await http.post(Uri.http(domain, "api/category"),
           body: jsonEncode(body),
           headers: {
             "Content-Type": "application/json",

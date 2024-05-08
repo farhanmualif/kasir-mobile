@@ -130,7 +130,7 @@ class _StokProductManagementState extends State<StokProductManagement> {
                             Expanded(
                               child: Image(
                                 image: NetworkImage(
-                                  "https://$domain/storage/images/${findProduct[index].image}",
+                                  "http://$domain/storage/images/${findProduct[index].image}",
                                 ),
                                 height: 70,
                                 width: 70,

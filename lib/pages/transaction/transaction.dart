@@ -187,7 +187,7 @@ class _TransactionState extends State<Transaction> {
                                             ),
                                             image: DecorationImage(
                                               image: NetworkImage(
-                                                "https://$domain/storage/images/${findProduct[index].image}",
+                                                "http://$domain/storage/images/${findProduct[index].image}",
                                               ),
                                               fit: BoxFit.cover,
                                             ),
@@ -329,7 +329,7 @@ class _TransactionState extends State<Transaction> {
                                                       uuid: findProduct[index]
                                                           .uuid,
                                                       image:
-                                                          "https://$domain/storage/images/${findProduct[index].image}",
+                                                          "http://$domain/storage/images/${findProduct[index].image}",
                                                       id: findProduct[index].id,
                                                       name: findProduct[index]
                                                           .name,

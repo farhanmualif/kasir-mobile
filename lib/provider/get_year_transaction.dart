@@ -16,7 +16,7 @@ class GetYearTransaction {
       var pref = await SharedPreferences.getInstance();
       var token = pref.getString('AccessToken');
       var response = await http.get(
-        Uri.https(domain!, 'api/years-transaction/$date'),
+        Uri.http(domain!, 'api/years-transaction/$date'),
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",

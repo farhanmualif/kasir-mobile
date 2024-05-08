@@ -14,7 +14,7 @@ class Auth {
   bool status;
   String message;
   dynamic data;
-  static var domain = dotenv.env["BASE_URL"] ?? "http://192.168.1.11:8080";
+  static var domain = dotenv.env["BASE_URL"]!;
 
   Auth({required this.status, required this.data, required this.message});
 
@@ -52,10 +52,14 @@ class Auth {
 
   static login(String email, String password) async {
     try {
-      var response = await http.post(Uri.https(domain, "api/login"),
+      var response = await http.post(Uri.http(domain, "api/login"),
           body: jsonEncode({"email": email, "password": password}),
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Credentials': 'true',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE',
           });
 
       var data = jsonDecode(response.body);
@@ -70,7 +74,7 @@ class Auth {
       var pref = await SharedPreferences.getInstance();
       var token = pref.getString('AccessToken');
       var response = await http.post(
-          Uri.https(
+          Uri.http(
             domain,
             "api/logout",
           ),
@@ -99,7 +103,7 @@ class Auth {
           ((X509Certificate cert, String host, int port) => true);
 
       var response =
-          await http.get(Uri.https(domain, "api/check-auth"), headers: {
+          await http.get(Uri.http(domain, "api/check-auth"), headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',

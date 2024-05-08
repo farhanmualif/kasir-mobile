@@ -15,7 +15,7 @@ class GetCategory {
       final token = prefs.getString('AccessToken');
 
       final response = await http.get(
-        Uri.https(domain, 'api/category'),
+        Uri.http(domain, 'api/category'),
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",

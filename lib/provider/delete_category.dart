@@ -14,13 +14,12 @@ class DeleteCategory {
       var domain = dotenv.env["BASE_URL"]!;
 
       var response =
-          await http.delete(Uri.https(domain, "api/category/$uuid"), headers: {
+          await http.delete(Uri.http(domain, "api/category/$uuid"), headers: {
         "Content-Type": "application/json",
         "Accept": "application/json",
         'Authorization': 'Bearer $token'
       });
 
-      print(response);
 
       if (response.statusCode == 200) {
         final resBody = jsonDecode(response.body);

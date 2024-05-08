@@ -85,7 +85,7 @@ class PaymentDone extends StatelessWidget {
                       backgroundColor: const Color(0xffFFCA45)),
                   onPressed: () {
                     String url =
-                        "https://$domain/storage/invoices/invoice_$noTransaction.pdf";
+                        "http://$domain/storage/invoices/invoice_$noTransaction.pdf";
                     Navigator.push(
                       context,
                       MaterialPageRoute(

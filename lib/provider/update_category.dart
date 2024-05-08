@@ -18,7 +18,7 @@ class UpdateCategory {
         "_method": "put"
       };
 
-      var response = await http.post(Uri.https(domain, "api/category/$uuid"),
+      var response = await http.post(Uri.http(domain, "api/category/$uuid"),
           body: jsonEncode(body),
           headers: {
             "Content-Type": "application/json",

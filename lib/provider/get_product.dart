@@ -68,7 +68,7 @@ class GetProduct {
       var pref = await SharedPreferences.getInstance();
       var token = pref.getString('AccessToken');
       var response =
-          await http.get(Uri.https(domain!, "api/products"), headers: {
+          await http.get(Uri.http(domain!, "api/products"), headers: {
         "Content-Type": "application/json",
         "Accept": "application/json",
         'Authorization': 'Bearer $token'

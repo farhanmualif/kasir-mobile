@@ -282,7 +282,7 @@ class _ListDailyTransactionReportState
                                                   .detailTransaction[index]
                                                   .noTransaction;
                                               String url =
-                                                  "https://$domain/storage/invoices/invoice_$noTransaction.pdf";
+                                                  "http://$domain/storage/invoices/invoice_$noTransaction.pdf";
                                               return Struk(url: url);
                                             },
                                           ),

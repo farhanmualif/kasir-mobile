@@ -22,7 +22,7 @@ class PostProduct {
 
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse("https://${domain!}/api/products"),
+        Uri.parse("http://${domain!}/api/products"),
       );
       Map<String, String> headers = {
         "Content-type": "multipart/form-data",
