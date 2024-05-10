@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kasir_mobile/components/barcode_camera.dart';
 import 'package:kasir_mobile/interface/product_interface.dart';
@@ -51,8 +49,10 @@ class _TransactionState extends State<Transaction> {
     getProduct().then((products) {
       setState(() {
         findProduct = products
-            .where(
-                (item) => item.name.toLowerCase().contains(query.toLowerCase()))
+            .where((item) =>
+                item.name.toLowerCase().contains(query.toLowerCase()) ||
+                (item.barcode != null &&
+                    item.barcode!.toLowerCase().contains(query.toLowerCase())))
             .toList();
       });
     });
@@ -120,13 +120,11 @@ class _TransactionState extends State<Transaction> {
                     child: GestureDetector(
                       onTap: () async {
                         try {
-                         
                           var barcodeResult = await BarcodeCamera().scanner();
 
                           setState(() {
                             searchBarController.text = barcodeResult;
                           });
-                         
                         } catch (e) {
                           rethrow;
                         }

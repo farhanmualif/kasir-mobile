@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:kasir_mobile/pages/struk.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:kasir_mobile/pages/struk.dart';
 import 'package:kasir_mobile/pages/transaction/transaction.dart';
 
 // ignore: must_be_immutable
@@ -59,9 +59,12 @@ class PaymentDone extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 16.0),
-                const Text(
-                  'Pembayaran Berhasil !',
-                  style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+                Text(
+                  typeTransaction == "Pembelian Barang"
+                      ? 'Berhasil Tambah Barang !'
+                      : "Pembayaran berhasil",
+                  style: const TextStyle(
+                      fontSize: 24.0, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 25.0),
                 Container(
@@ -75,7 +78,9 @@ class PaymentDone extends StatelessWidget {
                 ),
                 const SizedBox(height: 25.0),
                 Text(
-                  'Kembalian: $change',
+                  typeTransaction == "Pembelian Barang"
+                      ? ''
+                      : 'Kembalian: $change',
                   style: const TextStyle(
                       fontSize: 16.0, fontWeight: FontWeight.bold),
                 ),
@@ -84,14 +89,14 @@ class PaymentDone extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xffFFCA45)),
                   onPressed: () {
-                    // String url =
-                    //     "http://$domain/storage/invoices/invoice_$noTransaction.pdf";
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => Struk(url: url),
-                    //   ),
-                    // );
+                    String url =
+                        "http://$domain/storage/invoices/invoice_$noTransaction.pdf";
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Struk(url: url),
+                      ),
+                    );
                   },
                   child: const Text(
                     'LIHAT STRUK',
