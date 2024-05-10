@@ -53,6 +53,7 @@ class PostProduct {
       }
       var res = await request.send();
       http.Response response = await http.Response.fromStream(res);
+      print("cek res body : ${response.body}");
       return jsonDecode(response.body);
     } catch (e, stacktrace) {
       throw Exception('line: $stacktrace: $e');

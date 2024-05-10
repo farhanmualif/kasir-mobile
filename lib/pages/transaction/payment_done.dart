@@ -84,14 +84,14 @@ class PaymentDone extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xffFFCA45)),
                   onPressed: () {
-                    String url =
-                        "http://$domain/storage/invoices/invoice_$noTransaction.pdf";
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Struk(url: url),
-                      ),
-                    );
+                    // String url =
+                    //     "http://$domain/storage/invoices/invoice_$noTransaction.pdf";
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => Struk(url: url),
+                    //   ),
+                    // );
                   },
                   child: const Text(
                     'LIHAT STRUK',

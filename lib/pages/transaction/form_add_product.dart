@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kasir_mobile/components/barcode_camera.dart';
 import 'package:kasir_mobile/interface/category_interface.dart';
 import 'package:kasir_mobile/pages/transaction/payment_done.dart';
 import 'package:kasir_mobile/provider/get_category.dart';
@@ -35,21 +35,6 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
   bool _isLoading = false;
   // late Map<String, dynamic> productCategories;
 
-  Future<void> scanBarcode() async {
-    String barcodeScanRes;
-    try {
-      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-          '#ff6666', 'Batal', true, ScanMode.BARCODE);
-    } on PlatformException {
-      barcodeScanRes = 'Failed to get platform version';
-    }
-    if (!mounted) return;
-    setState(() {
-      setBarcodeResult = barcodeScanRes;
-      
-    });
-  }
-
   postProduct() async {
     try {
       setState(() {
@@ -72,7 +57,7 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
             MaterialPageRoute(
                 builder: (context) => PaymentDone(
                       change: 0,
-                      typeTransaction: "Pembelian",
+                      typeTransaction: "Pembelian Barang",
                     )));
         // Navigator.of(context)
         //     .push(MaterialPageRoute(builder: (context) => const Struk()));
@@ -123,6 +108,7 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
   void initState() {
     super.initState();
     getAllCategory();
+
     // print("cek kategori: $productCategories");
   }
 
@@ -203,7 +189,24 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                                           _pickImageFromCamera();
                                         },
                                         child: GestureDetector(
-                                          onTap: scanBarcode,
+                                          onTap: () async {
+                                            try {
+                                              try {
+                                                var barcodeResult =
+                                                    await BarcodeCamera()
+                                                        .scanner();
+
+                                                setState(() {
+                                                  _codeController.text =
+                                                      barcodeResult;
+                                                });
+                                              } catch (e) {
+                                                rethrow;
+                                              }
+                                            } catch (e) {
+                                              rethrow;
+                                            }
+                                          },
                                           child: const Icon(
                                               Icons.qr_code_scanner_outlined),
                                         ),
@@ -286,16 +289,29 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                                 SizedBox(
                                   child: TextFormField(
                                     controller: _codeController,
-                                    decoration: const InputDecoration(
+                                    decoration: InputDecoration(
                                       isDense: true,
                                       isCollapsed: true,
-                                      contentPadding: EdgeInsets.all(10),
-                                      border: OutlineInputBorder(
+                                      contentPadding: const EdgeInsets.all(10),
+                                      border: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                           Radius.circular(50),
                                         ),
                                       ),
-                                      suffixIcon: Icon(Icons.qr_code),
+                                      suffixIcon: GestureDetector(
+                                        onTap: () async {
+                                          try {
+                                            String barcodeRes =
+                                                await BarcodeCamera().scanner();
+                                            setState(() {
+                                              _codeController.text = barcodeRes;
+                                            });
+                                          } catch (e) {
+                                            rethrow;
+                                          }
+                                        },
+                                        child: const Icon(Icons.qr_code),
+                                      ),
                                     ),
                                     validator: (value) {
                                       if (value!.isEmpty) {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:kasir_mobile/components/barcode_camera.dart';
 import 'package:kasir_mobile/interface/product_interface.dart';
 import 'package:kasir_mobile/interface/transaction_interface.dart';
 import 'package:kasir_mobile/pages/home/home_app.dart';
@@ -117,7 +118,19 @@ class _TransactionState extends State<Transaction> {
                   Expanded(
                     flex: -1,
                     child: GestureDetector(
-                      onTap: scanBarcode,
+                      onTap: () async {
+                        try {
+                         
+                          var barcodeResult = await BarcodeCamera().scanner();
+
+                          setState(() {
+                            searchBarController.text = barcodeResult;
+                          });
+                         
+                        } catch (e) {
+                          rethrow;
+                        }
+                      },
                       child: const Icon(Icons.qr_code_scanner_outlined),
                     ),
                   ),
@@ -423,19 +436,5 @@ class _TransactionState extends State<Transaction> {
         ),
       ),
     );
-  }
-
-  Future<void> scanBarcode() async {
-    String barcodeScanRes;
-    try {
-      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-          '#ff6666', 'Batal', true, ScanMode.BARCODE);
-    } on PlatformException {
-      barcodeScanRes = 'Failed to get platform version';
-    }
-    if (!mounted) return;
-    setState(() {
-      searchBarController.text = barcodeScanRes;
-    });
   }
 }
