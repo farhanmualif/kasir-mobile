@@ -34,6 +34,18 @@ class _StokProductManagementState extends State<StokProductManagement> {
       var response = await DeleteProduct.delete(uuid);
       var resApi =
           ApiResponse(status: response.status, message: response.message);
+      if (resApi.status) {
+        // Hapus data dari daftar findProduct
+        setState(() {
+          findProduct.removeWhere((item) => item.uuid == uuid);
+        });
+        // Muat ulang data setelah berhasil menghapus
+        getProduct().then((value) {
+          setState(() {
+            findProduct = value;
+          });
+        });
+      }
       return resApi;
     } catch (e) {
       rethrow;

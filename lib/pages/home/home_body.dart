@@ -101,7 +101,7 @@ class _HomeBodyState extends State<HomeBody> {
                     child: Container(
                       // onTap
                       padding: const EdgeInsets.all(10),
-                      width: 170,
+                      width: MediaQuery.of(context).size.width * 0.4,
                       height: 72,
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -126,7 +126,7 @@ class _HomeBodyState extends State<HomeBody> {
                         Padding(
                           padding: const EdgeInsets.all(10),
                           child: Container(
-                            width: 170,
+                            width: MediaQuery.of(context).size.width * 0.4,
                             height: 72,
                             decoration: BoxDecoration(
                               color: const Color(0xffFFCA45),
@@ -177,7 +177,7 @@ class _HomeBodyState extends State<HomeBody> {
                   },
                   child: Container(
                     padding: const EdgeInsets.all(10),
-                    width: 170,
+                    width: MediaQuery.of(context).size.width * 0.4,
                     height: 72,
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -209,7 +209,7 @@ class _HomeBodyState extends State<HomeBody> {
                           padding: const EdgeInsets.all(10),
                           child: Container(
                             padding: const EdgeInsets.all(10),
-                            width: 170,
+                            width: MediaQuery.of(context).size.width * 0.4,
                             height: 72,
                             decoration: BoxDecoration(
                               color: Colors.white,

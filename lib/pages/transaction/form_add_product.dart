@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kasir_mobile/components/barcode_camera.dart';
 import 'package:kasir_mobile/interface/category_interface.dart';
@@ -31,9 +30,8 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
   List<CategoryProduct> allCategories = [];
 
   File? _selectedImage;
-
+   
   bool _isLoading = false;
-  // late Map<String, dynamic> productCategories;
 
   postProduct() async {
     try {
@@ -45,6 +43,7 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
           name: _productNameController.text,
           purchasePrice: int.parse(_purchasePriceController.text),
           sellingPrice: int.parse(_sellingPriceController.text),
+          barcode: _codeController.text,
           categoryId: _idCategorySelected.isNotEmpty
               ? int.tryParse(_idCategorySelected) ?? 0
               : null,

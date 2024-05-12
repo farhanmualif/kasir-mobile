@@ -58,11 +58,11 @@ class PaymentDone extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 16.0),
                 Text(
                   typeTransaction == "Pembelian Barang"
                       ? 'Berhasil Tambah Barang !'
                       : "Pembayaran berhasil",
+                  textAlign: TextAlign.center,
                   style: const TextStyle(
                       fontSize: 24.0, fontWeight: FontWeight.bold),
                 ),
@@ -85,24 +85,25 @@ class PaymentDone extends StatelessWidget {
                       fontSize: 16.0, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 22.0),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xffFFCA45)),
-                  onPressed: () {
-                    String url =
-                        "http://$domain/storage/invoices/invoice_$noTransaction.pdf";
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Struk(url: url),
-                      ),
-                    );
-                  },
-                  child: const Text(
-                    'LIHAT STRUK',
-                    style: TextStyle(color: Colors.black),
+                if (typeTransaction == "Transaksi")
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xffFFCA45)),
+                    onPressed: () {
+                      String url =
+                          "http://$domain/storage/invoices/invoice_$noTransaction.pdf";
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Struk(url: url),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      'LIHAT STRUK',
+                      style: TextStyle(color: Colors.black),
+                    ),
                   ),
-                ),
               ],
             ),
           ),
