@@ -57,6 +57,7 @@ class _ConfirmTransactionState extends State<ConfirmTransaction> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('type transaction 2: ${widget.typeTransaction}');
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
@@ -218,6 +219,7 @@ class _ConfirmTransactionState extends State<ConfirmTransaction> {
                                       builder: (context) => Payment(
                                         totalPrice: calculateTotalPrice(),
                                         listTransaction: groupedProducts,
+                                        
                                       ),
                                     ),
                                   );

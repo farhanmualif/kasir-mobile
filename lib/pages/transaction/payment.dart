@@ -87,7 +87,7 @@ class _PaymentState extends State<Payment> {
                       builder: (context) => PaymentDone(
                         change: change,
                         noTransaction: result.data?.noTransaction,
-                        typeTransaction: "Penjualan",
+                        typeTransaction: "Transaksi",
                       ),
                     ),
                   );
