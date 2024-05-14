@@ -95,9 +95,9 @@ class _PaymentState extends State<Payment> {
               } else if (result.data == null) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      duration: Duration(seconds: 5),
-                      content: Text('Gagal menambahkan data transaksi'),
+                    SnackBar(
+                      duration: const Duration(seconds: 5),
+                      content: Text(snapshot.data!.message),
                       backgroundColor: Colors.red,
                     ),
                   );

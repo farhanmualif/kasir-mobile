@@ -6,7 +6,7 @@ class TransactionData {
   double price;
   double purcahsePrice;
   int remaining;
-  int count;
+  int selected;
   String image;
   TransactionData.set(
       {required this.id,
@@ -16,11 +16,11 @@ class TransactionData {
       required this.price,
       required this.purcahsePrice,
       required this.barcode,
-      this.count = 0,
+      this.selected = 0,
       required this.remaining});
 
   @override
   String toString() {
-    return '{id: $id, name: $name, price: $price, count: $count, remaining: $remaining}';
+    return '{id: $id, name: $name, price: $price, count: $selected, remaining: $remaining}';
   }
 }

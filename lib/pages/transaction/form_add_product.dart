@@ -30,7 +30,7 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
   List<CategoryProduct> allCategories = [];
 
   File? _selectedImage;
-   
+
   bool _isLoading = false;
 
   postProduct() async {
@@ -187,28 +187,7 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                                         onTap: () {
                                           _pickImageFromCamera();
                                         },
-                                        child: GestureDetector(
-                                          onTap: () async {
-                                            try {
-                                              try {
-                                                var barcodeResult =
-                                                    await BarcodeCamera()
-                                                        .scanner();
-
-                                                setState(() {
-                                                  _codeController.text =
-                                                      barcodeResult;
-                                                });
-                                              } catch (e) {
-                                                rethrow;
-                                              }
-                                            } catch (e) {
-                                              rethrow;
-                                            }
-                                          },
-                                          child: const Icon(
-                                              Icons.qr_code_scanner_outlined),
-                                        ),
+                                        child: const Icon(Icons.camera_alt),
                                       ),
                                     ),
                                   ],
@@ -283,7 +262,7 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text("Kode*"),
+                                const Text("barcode*"),
                                 const SizedBox(height: 10),
                                 SizedBox(
                                   child: TextFormField(
@@ -309,7 +288,12 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                                             rethrow;
                                           }
                                         },
-                                        child: const Icon(Icons.qr_code),
+                                        child: const RotationTransition(
+                                          turns: AlwaysStoppedAnimation(1 / 4),
+                                          child: Image(
+                                              image: AssetImage(
+                                                  "assets/images/barcode.png")),
+                                        ),
                                       ),
                                     ),
                                     validator: (value) {
@@ -323,9 +307,6 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                               ],
                             ),
                           ),
-                          Container(
-                              margin: const EdgeInsets.only(top: 15, left: 5),
-                              child: const Icon(Icons.replay_outlined))
                         ],
                       ),
                       const SizedBox(

@@ -5,7 +5,6 @@ class AddCategory extends StatefulWidget {
   const AddCategory({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _AddCategoryState createState() => _AddCategoryState();
 }
 
@@ -56,30 +55,44 @@ class _AddCategoryState extends State<AddCategory> {
                   setState(() {
                     _isLoading = true;
                   });
+
                   var response = await postCategory();
-                  setState(() {
-                    _isLoading = false;
-                  });
-                  if (response["status"] == false) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      duration: const Duration(seconds: 5),
-                      content: Text(response['message']),
-                      backgroundColor: Colors.red,
-                    ));
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      duration: const Duration(seconds: 5),
-                      content: Text(response['message']),
-                      backgroundColor: Colors.green,
-                    ));
+
+                  if (mounted) {
+                    setState(() {
+                      _isLoading = false;
+                    });
+
+                    // Use a local variable to store the BuildContext
+                    final snackBarContext = context;
+
+                    if (response["status"] == false) {
+                      ScaffoldMessenger.of(snackBarContext).showSnackBar(
+                        SnackBar(
+                          duration: const Duration(seconds: 5),
+                          content: Text(response['message']),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(snackBarContext).showSnackBar(
+                        SnackBar(
+                          duration: const Duration(seconds: 5),
+                          content: Text(response['message']),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    }
                   }
                 },
                 child: _isLoading
                     ? const CircularProgressIndicator(
                         color: Colors.white,
                       )
-                    : const Text('Simpan',
-                        style: TextStyle(color: Colors.white)),
+                    : const Text(
+                        'Simpan',
+                        style: TextStyle(color: Colors.white),
+                      ),
               ),
             )
           ],

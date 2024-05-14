@@ -24,7 +24,6 @@ class PostCategory {
             "Accept": "application/json",
             'Authorization': 'Bearer $token'
           });
-      print(response.body);
 
       if (response.statusCode == 200) {
         final resBody = jsonDecode(response.body);

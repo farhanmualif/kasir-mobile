@@ -25,6 +25,12 @@ class RequestTransaction {
       'quantity': quantity,
     };
   }
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return super.toString();
+  }
 }
 
 class PostTransaction {
