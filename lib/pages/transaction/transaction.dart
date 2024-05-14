@@ -21,9 +21,10 @@ class _TransactionState extends State<Transaction> {
   int count = 0;
   bool isLoading = true;
   var domain = dotenv.env['BASE_URL'];
-  List<TransactionData> transaction = [];
+  List<TransactionData> transactions = [];
   List<Product> findProduct = [];
   final searchBarController = TextEditingController();
+  int subTotal = 0;
 
   Future<List<Product>> getProduct() async {
     try {
@@ -32,6 +33,16 @@ class _TransactionState extends State<Transaction> {
     } catch (e) {
       rethrow;
     }
+  }
+
+  int subTotalPayment() {
+    var subTotalPrice = 0;
+
+    for (var transaction in transactions) {
+      subTotalPrice += transaction.price.toInt();
+    }
+
+    return subTotalPrice;
   }
 
   @override
@@ -60,7 +71,6 @@ class _TransactionState extends State<Transaction> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('type transaction 1: ${widget.typeTransaction}');
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
@@ -219,7 +229,7 @@ class _TransactionState extends State<Transaction> {
                                             Row(
                                               children: [
                                                 Text(
-                                                  "${findProduct[index].stock}",
+                                                  "Stok: ${findProduct[index].stock}",
                                                   style: const TextStyle(
                                                       fontSize: 10),
                                                 ),
@@ -261,17 +271,19 @@ class _TransactionState extends State<Transaction> {
                                                 );
                                               } else {
                                                 setState(() {
-                                                  if (transaction.isNotEmpty) {
-                                                    final lastIndexs = transaction
-                                                        .lastIndexWhere(
-                                                            (element) =>
-                                                                element.id ==
-                                                                findProduct[
-                                                                        index]
-                                                                    .id);
+                                                  if (transactions.isNotEmpty) {
+                                                    final lastIndexs =
+                                                        transactions
+                                                            .lastIndexWhere(
+                                                                (element) =>
+                                                                    element
+                                                                        .id ==
+                                                                    findProduct[
+                                                                            index]
+                                                                        .id);
 
                                                     if (lastIndexs != -1) {
-                                                      transaction
+                                                      transactions
                                                           .removeAt(lastIndexs);
                                                     }
                                                   }
@@ -306,7 +318,7 @@ class _TransactionState extends State<Transaction> {
                                                 borderRadius: BorderRadius.all(
                                                     Radius.circular(5))),
                                             child: Center(
-                                                child: Text(transaction
+                                                child: Text(transactions
                                                     .where((element) =>
                                                         element.id ==
                                                         findProduct[index].id)
@@ -329,9 +341,10 @@ class _TransactionState extends State<Transaction> {
                                                     backgroundColor: Colors.red,
                                                   ),
                                                 );
+                                                print(transactions);
                                               } else {
                                                 setState(() {
-                                                  transaction.add(TransactionData.set(
+                                                  transactions.add(TransactionData.set(
                                                       purcahsePrice:
                                                           findProduct[index]
                                                               .purchasePrice,
@@ -351,6 +364,8 @@ class _TransactionState extends State<Transaction> {
                                                           findProduct[index]
                                                               .stock));
                                                 });
+
+                                                subTotal = subTotalPayment();
                                               }
                                             },
                                             child: Container(
@@ -386,12 +401,12 @@ class _TransactionState extends State<Transaction> {
                         height: 60,
                         child: TextButton(
                           onPressed: () {
-                            if (transaction.isNotEmpty) {
+                            if (transactions.isNotEmpty) {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => ConfirmTransaction(
-                                    listTransaction: transaction,
+                                    listTransaction: transactions,
                                     typeTransaction: widget.typeTransaction,
                                   ),
                                 ),
@@ -402,9 +417,9 @@ class _TransactionState extends State<Transaction> {
                             children: [
                               Expanded(
                                   child: Text(
-                                transaction.length.toString(),
+                                "Rp. $subTotal",
                                 style: const TextStyle(
-                                    fontSize: 40,
+                                    fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                     color: Color(0xff000000)),
                               )),

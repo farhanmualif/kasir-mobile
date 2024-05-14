@@ -100,7 +100,8 @@ class _ConfirmTransactionState extends State<ConfirmTransaction> {
                     ],
                   ),
                 ),
-                SizedBox(
+                Container(
+                  margin: const EdgeInsets.only(left: 10, right: 10),
                   height: MediaQuery.of(context).size.height * 0.8,
                   child: Stack(
                     children: [
@@ -219,7 +220,6 @@ class _ConfirmTransactionState extends State<ConfirmTransaction> {
                                       builder: (context) => Payment(
                                         totalPrice: calculateTotalPrice(),
                                         listTransaction: groupedProducts,
-                                        
                                       ),
                                     ),
                                   );
@@ -275,9 +275,9 @@ class _ConfirmTransactionState extends State<ConfirmTransaction> {
                               children: [
                                 Expanded(
                                     child: Text(
-                                  widget.listTransaction.length.toString(),
+                                  "Rp. ${calculateTotalPrice()}",
                                   style: const TextStyle(
-                                      fontSize: 40,
+                                      fontSize: 30,
                                       fontWeight: FontWeight.bold,
                                       color: Color(0xff000000)),
                                 )),
@@ -287,8 +287,8 @@ class _ConfirmTransactionState extends State<ConfirmTransaction> {
                                       widget.typeTransaction == "Transaksi"
                                           ? "Lanjut"
                                           : "Update",
-                                      style:
-                                          TextStyle(color: Color(0xff000000)),
+                                      style: const TextStyle(
+                                          color: Color(0xff000000)),
                                     )),
                                 const Expanded(
                                   flex: -1,

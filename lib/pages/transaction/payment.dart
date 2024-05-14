@@ -191,7 +191,7 @@ class _PaymentState extends State<Payment> {
                     },
                     child: const Center(
                       child: Text(
-                        'C',
+                        'HAPUS',
                         style: TextStyle(fontSize: 20.0),
                       ),
                     ),
