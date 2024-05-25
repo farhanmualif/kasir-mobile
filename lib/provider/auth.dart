@@ -89,7 +89,7 @@ class Auth {
         deletePrefer(context);
       }
       // return resJson;
-    } catch (e) { 
+    } catch (e) {
       return e;
     }
   }

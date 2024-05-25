@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kasir_mobile/helper/format_cuurency.dart';
 import 'package:kasir_mobile/pages/management/add_category.dart';
 import 'package:kasir_mobile/pages/management/edit_category.dart';
 import 'package:kasir_mobile/provider/delete_category.dart';
@@ -103,7 +104,7 @@ class _ProductCategoryState extends State<ProductCategory> {
                                               'sisa: ${snapshot.data!.data![index].remainingStock}')),
                                       Expanded(
                                           child: Text(
-                                              'Modal: ${snapshot.data!.data![index].capital}')),
+                                              'Modal: ${convertToIdr(int.parse(snapshot.data!.data![index].capital!.replaceAll('.00', '')))}')),
                                     ],
                                   ),
                                 ),

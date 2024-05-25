@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kasir_mobile/helper/format_cuurency.dart';
 import 'package:kasir_mobile/interface/response_transaction_interface.dart';
 import 'package:kasir_mobile/pages/transaction/payment_done.dart';
 import 'package:kasir_mobile/provider/post_transaction.dart';
@@ -128,7 +129,7 @@ class _PaymentState extends State<Payment> {
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: const Color(0xff076A68),
         title: Text(
-          "Rp. ${widget.totalPrice}",
+          convertToIdr(widget.totalPrice),
           style: const TextStyle(color: Colors.white),
         ),
       ),
@@ -140,7 +141,7 @@ class _PaymentState extends State<Payment> {
             Container(
               margin: const EdgeInsets.only(top: 60),
               child: Text(
-                "Rp. $nominal",
+                convertToIdr(int.parse(nominal)),
                 style: const TextStyle(
                   fontSize: 24.0,
                   fontWeight: FontWeight.bold,

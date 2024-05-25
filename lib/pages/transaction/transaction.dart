@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kasir_mobile/components/barcode_camera.dart';
+import 'package:kasir_mobile/helper/format_cuurency.dart';
 import 'package:kasir_mobile/interface/product_interface.dart';
 import 'package:kasir_mobile/interface/transaction_interface.dart';
 import 'package:kasir_mobile/pages/home/home_app.dart';
@@ -234,7 +235,9 @@ class _TransactionState extends State<Transaction> {
                                                 ),
                                               ),
                                               Text(
-                                                  "Rp.${findProduct[index].sellingPrice}",
+                                                  convertToIdr(
+                                                      findProduct[index]
+                                                          .sellingPrice),
                                                   style: const TextStyle(
                                                       fontSize: 10))
                                             ],
@@ -439,7 +442,7 @@ class _TransactionState extends State<Transaction> {
                           children: [
                             Expanded(
                                 child: Text(
-                              "Rp. $subTotal",
+                              convertToIdr(subTotal),
                               style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,

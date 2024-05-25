@@ -213,8 +213,10 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                             ),
                           ),
                           validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Nama barang harus diisi';
+                            if (value == null || value.isEmpty) {
+                              return "nama barang tidak boleh kosong";
+                            } else if (!value.contains('@')) {
+                              return "nama barang tidak valid";
                             }
                             return null;
                           },
@@ -234,6 +236,14 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                                 const SizedBox(height: 10),
                                 SizedBox(
                                   child: TextFormField(
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return "stock tidak boleh kosong";
+                                      } else if (!value.contains('@')) {
+                                        return "stock tidak valid";
+                                      }
+                                      return null;
+                                    },
                                     controller: _stockController,
                                     keyboardType: TextInputType.number,
                                     decoration: const InputDecoration(
@@ -246,12 +256,6 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                                         ),
                                       ),
                                     ),
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return 'Stok harus diisi';
-                                      }
-                                      return null;
-                                    },
                                   ),
                                 )
                               ],
@@ -296,12 +300,6 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                                         ),
                                       ),
                                     ),
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return 'Kode harus diisi';
-                                      }
-                                      return null;
-                                    },
                                   ),
                                 )
                               ],
@@ -323,6 +321,14 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                                 const SizedBox(height: 10),
                                 SizedBox(
                                   child: TextFormField(
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return "Harga dasar tidak boleh kosong";
+                                      } else if (!value.contains('@')) {
+                                        return "Harga dasar tidak valid";
+                                      }
+                                      return null;
+                                    },
                                     controller: _purchasePriceController,
                                     keyboardType: TextInputType.number,
                                     decoration: const InputDecoration(
@@ -335,12 +341,6 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                                             Radius.circular(50),
                                           ),
                                         )),
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return 'Harga dasar harus diisi';
-                                      }
-                                      return null;
-                                    },
                                   ),
                                 )
                               ],
@@ -355,6 +355,14 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                                 const SizedBox(height: 10),
                                 SizedBox(
                                   child: TextFormField(
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return "Harga jual tidak boleh kosong";
+                                      } else if (!value.contains('@')) {
+                                        return "Harga jual tidak valid";
+                                      }
+                                      return null;
+                                    },
                                     controller: _sellingPriceController,
                                     keyboardType: TextInputType.number,
                                     decoration: const InputDecoration(
@@ -367,12 +375,6 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                                             Radius.circular(50),
                                           ),
                                         )),
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return 'Harga jual harus diisi';
-                                      }
-                                      return null;
-                                    },
                                   ),
                                 )
                               ],
@@ -417,7 +419,20 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(5))),
                           child: TextButton(
-                            onPressed: postProduct,
+                            onPressed: () {
+                              if (_formKey.currentState != null &&
+                                  _formKey.currentState!.validate()) {
+                                _formKey.currentState!.save();
+                              }
+                              if (_productNameController.text.isNotEmpty &&
+                                  _purchasePriceController.text.isNotEmpty &&
+                                  _sellingPriceController.text.isNotEmpty &&
+                                  _stockController.text.isNotEmpty) {
+                                postProduct();
+                              } else {
+                                return;
+                              }
+                            },
                             child: const Text(
                               "Simpan",
                               style: TextStyle(

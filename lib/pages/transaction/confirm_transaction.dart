@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:kasir_mobile/helper/format_cuurency.dart';
+import 'package:kasir_mobile/helper/show_snack_bar.dart';
 import 'package:kasir_mobile/interface/transaction_interface.dart';
 import 'package:kasir_mobile/pages/transaction/payment.dart';
 import 'package:kasir_mobile/pages/transaction/transaction.dart';
@@ -57,14 +60,13 @@ class _ConfirmTransactionState extends State<ConfirmTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('type transaction 2: ${widget.typeTransaction}');
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: const Color(0xff076A68),
-        title: const Text(
-          "Transaksi",
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          widget.typeTransaction,
+          style: const TextStyle(color: Colors.white),
         ),
       ),
       body: _isLoading
@@ -163,7 +165,7 @@ class _ConfirmTransactionState extends State<ConfirmTransaction> {
                                                   left: 5, right: 5),
                                               child: const Text("x"),
                                             ),
-                                            Text(product['price'].toString(),
+                                            Text(convertToIdr(product['price']),
                                                 style: const TextStyle(
                                                     fontSize: 10))
                                           ],
@@ -225,11 +227,14 @@ class _ConfirmTransactionState extends State<ConfirmTransaction> {
                                   );
                                 });
                               } else {
-                                List<bool> response = [];
+                                bool response = false;
                                 setState(() {
                                   _isLoading = true;
                                 });
                                 try {
+                                  setState(() {
+                                    _isLoading = true;
+                                  });
                                   for (var product
                                       in groupedProducts.values.toList()) {
                                     var res = await updateProduct(
@@ -240,25 +245,23 @@ class _ConfirmTransactionState extends State<ConfirmTransaction> {
                                         sellingPrice: product['price'],
                                         purchasePrice: product['purchasePrice'],
                                         addOrreduceStock: "add");
-                                    response.add(res);
+                                    setState(() {
+                                      response = res;
+                                    });
                                   }
+                                  setState(() {
+                                    _isLoading = false;
+                                  });
+                                  setState(() {
+                                    showSnackbar(response, context);
+                                  });
                                 } catch (e) {
                                   rethrow;
                                 }
                                 setState(() {
                                   _isLoading = false;
                                 });
-                                for (var resp in response) {
-                                  if (!resp) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        duration: Duration(seconds: 1),
-                                        content: Text('Terjadi Kesalahan'),
-                                        backgroundColor: Colors.red,
-                                      ),
-                                    );
-                                  }
-                                }
+
                                 setState(() {
                                   Navigator.push(
                                     context,
@@ -275,7 +278,7 @@ class _ConfirmTransactionState extends State<ConfirmTransaction> {
                               children: [
                                 Expanded(
                                     child: Text(
-                                  "Rp. ${calculateTotalPrice()}",
+                                  " ${convertToIdr(calculateTotalPrice())}",
                                   style: const TextStyle(
                                       fontSize: 30,
                                       fontWeight: FontWeight.bold,

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kasir_mobile/components/update_dialog.dart';
+import 'package:kasir_mobile/helper/format_cuurency.dart';
 import 'package:kasir_mobile/interface/api_response.dart';
 import 'package:kasir_mobile/interface/product_interface.dart';
 import 'package:kasir_mobile/provider/delete_product.dart';
@@ -167,7 +168,7 @@ class _StokProductManagementState extends State<StokProductManagement> {
                                     style: const TextStyle(fontSize: 16),
                                   ),
                                   Text(
-                                    "Hrg dsr: Rp. ${findProduct[index].purchasePrice}",
+                                    "Hrg dsr: ${convertToIdr(findProduct[index].purchasePrice)}",
                                     style: const TextStyle(fontSize: 16),
                                   )
                                 ],
@@ -186,7 +187,8 @@ class _StokProductManagementState extends State<StokProductManagement> {
                                         fontWeight: FontWeight.bold),
                                   ),
                                   Text(
-                                    "Rp. ${findProduct[index].sellingPrice}",
+                                    convertToIdr(
+                                        findProduct[index].sellingPrice),
                                     style: const TextStyle(fontSize: 13),
                                   ),
                                   Row(
@@ -247,7 +249,7 @@ class _StokProductManagementState extends State<StokProductManagement> {
                                                                           seconds:
                                                                               1),
                                                                       content: Text(
-                                                                          'berhasil menhapus data'),
+                                                                          'berhasil menghapus data'),
                                                                       backgroundColor:
                                                                           Colors
                                                                               .green,
