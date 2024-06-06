@@ -17,7 +17,6 @@ class PaymentDone extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xff076A68).withOpacity(0.3),
@@ -60,7 +59,7 @@ class PaymentDone extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  typeTransaction == "Penjualan"
+                  typeTransaction == "Pembelian Barang"
                       ? 'Berhasil Tambah Barang !'
                       : "Pembayaran berhasil",
                   textAlign: TextAlign.center,

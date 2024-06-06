@@ -61,7 +61,6 @@ class Auth {
             'Access-Control-Allow-Headers': 'Content-Type',
             'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE',
           });
-
       var data = jsonDecode(response.body);
       return Auth.loginResult(data);
     } catch (e, stacktrace) {

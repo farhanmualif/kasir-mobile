@@ -38,6 +38,18 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
       setState(() {
         _isLoading = true;
       });
+
+      if (int.parse(_purchasePriceController.text) >=
+          int.parse(_sellingPriceController.text)) {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          duration: Duration(seconds: 5),
+          content: Text("Harga jual harus lebih besar dari harga beli"),
+          backgroundColor: Colors.red,
+        ));
+        return;
+      }
+
       final post = await PostProduct.postProduct(
           image: _selectedImage,
           name: _productNameController.text,
@@ -215,8 +227,6 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return "nama barang tidak boleh kosong";
-                            } else if (!value.contains('@')) {
-                              return "nama barang tidak valid";
                             }
                             return null;
                           },
@@ -239,8 +249,6 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
                                         return "stock tidak boleh kosong";
-                                      } else if (!value.contains('@')) {
-                                        return "stock tidak valid";
                                       }
                                       return null;
                                     },
@@ -324,8 +332,6 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
                                         return "Harga dasar tidak boleh kosong";
-                                      } else if (!value.contains('@')) {
-                                        return "Harga dasar tidak valid";
                                       }
                                       return null;
                                     },
@@ -358,8 +364,6 @@ class _FormAddProductPageState extends State<FormAddProductPage> {
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
                                         return "Harga jual tidak boleh kosong";
-                                      } else if (!value.contains('@')) {
-                                        return "Harga jual tidak valid";
                                       }
                                       return null;
                                     },
