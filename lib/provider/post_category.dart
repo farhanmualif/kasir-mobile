@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:kasir_mobile/interface/api_response.dart';
+import 'package:kasir_mobile/interface/api_response_interface.dart';
 import 'package:kasir_mobile/interface/category_interface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;

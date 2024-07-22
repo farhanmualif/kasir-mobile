@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kasir_mobile/components/update_dialog.dart';
 import 'package:kasir_mobile/helper/format_cuurency.dart';
-import 'package:kasir_mobile/interface/api_response.dart';
+import 'package:kasir_mobile/interface/api_response_interface.dart';
 import 'package:kasir_mobile/interface/product_interface.dart';
 import 'package:kasir_mobile/provider/delete_product.dart';
 import 'package:kasir_mobile/provider/get_product.dart';

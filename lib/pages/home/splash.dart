@@ -20,7 +20,7 @@ class _SplashState extends State<Splash> {
 
   checkAuth() async {
     try {
-      var auth = await Auth.checkAuth();
+      var auth = await Auth.authenticated();
       return auth;
     } catch (e) {
       rethrow;

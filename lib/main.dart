@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:kasir_mobile/pages/auth/login_page.dart';
+import 'package:kasir_mobile/pages/auth/register_page.dart';
+import 'package:kasir_mobile/pages/home/home_app.dart';
 import 'package:kasir_mobile/pages/home/splash.dart';
 
 void main() async {
@@ -26,6 +29,11 @@ class MyApp extends StatelessWidget {
           key: key,
         ),
       ),
+      routes: {
+        "/login": (context) => const LoginPage(),
+        "/register": (context) => const RegisterPage(),
+        "/home": (context) => const HomeApp()
+      },
     );
   }
 }

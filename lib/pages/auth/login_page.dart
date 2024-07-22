@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:kasir_mobile/interface/api_response_interface.dart';
+import 'package:kasir_mobile/interface/login_result_interface.dart';
 import 'package:kasir_mobile/main.dart';
 import 'package:kasir_mobile/provider/auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,7 +31,8 @@ class _LoginPageState extends State<LoginPage> {
 
   void _login(BuildContext context, String email, String password) async {
     try {
-      Auth response = await Auth.login(email, password);
+      ApiResponse<LoginResult> response = await Auth.login(email, password);
+
       if (response != null) {
         if (response.status == false) {
           const snackBar = SnackBar(
@@ -43,9 +46,9 @@ class _LoginPageState extends State<LoginPage> {
           return;
         } else {
           SharedPreferences pref = await SharedPreferences.getInstance();
-          pref.setString("UserEmail", response.data.email);
-          pref.setString("name", response.data.name);
-          pref.setString('AccessToken', response.data.token);
+          pref.setString("UserEmail", response.data!.user.email);
+          pref.setString("name", response.data!.user.name);
+          pref.setString('AccessToken', response.data!.user.token);
           Navigator.pushReplacement(
               // ignore: use_build_context_synchronously
               context,
@@ -78,12 +81,17 @@ class _LoginPageState extends State<LoginPage> {
                       style:
                           TextStyle(fontSize: 40, fontWeight: FontWeight.w900),
                     ),
-                    const Row(
+                    Row(
                       children: [
-                        Text("Don`t have an account?"),
-                        Text(
-                          "Create Now",
-                          style: TextStyle(color: Color(0xff076A68)),
+                        const Text("Belum memiliki akun? "),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, '/register');
+                          },
+                          child: const Text(
+                            "Buat sekarang",
+                            style: TextStyle(color: Color(0xff076A68)),
+                          ),
                         ),
                       ],
                     ),

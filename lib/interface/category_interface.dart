@@ -1,6 +1,6 @@
 class CategoryProduct {
   final int id;
-   String? uuid;
+  String? uuid;
   final String name;
   String? capital;
   int? remainingStock;

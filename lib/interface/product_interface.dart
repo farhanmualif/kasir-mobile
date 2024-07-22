@@ -10,7 +10,6 @@ class Product {
   double sellingPrice;
   double purchasePrice;
   String image;
-
   DateTime createdAt;
   DateTime updatedAt;
 
@@ -44,7 +43,6 @@ class Product {
       stock: json['stock'],
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
-      
     );
   }
 }

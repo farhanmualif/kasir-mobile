@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:kasir_mobile/interface/api_response_interface.dart';
 import 'package:kasir_mobile/interface/check_auth_interface.dart';
-import 'package:kasir_mobile/interface/user_interface.dart';
+import 'package:kasir_mobile/interface/login_result_interface.dart';
+import 'package:kasir_mobile/interface/register_result_interface.dart';
 import 'package:http/http.dart' as http;
 import 'package:kasir_mobile/main.dart';
 import 'dart:convert';
@@ -27,42 +29,47 @@ class Auth {
         MaterialPageRoute(builder: ((context) => const MyApp())));
   }
 
-  factory Auth.loginResult(Map<String, dynamic> object) {
+  static Future<ApiResponse<LoginResult>> login(
+    String email,
+    String password,
+  ) async {
     try {
-      if (object["status"] == true) {
-        var data = object["data"];
-        User user = User(
-          token: data["token"],
-          uuid: data["uuid"],
-          name: data["user"],
-          email: data["email"],
-        );
-        return Auth(
-            status: object["status"], data: user, message: object['message']);
-      } else {
-        return Auth(
-            status: object["status"],
-            data: object["data"],
-            message: object['message']);
-      }
+      var response = await http.post(Uri.http(domain, "api/login"),
+          body: jsonEncode({
+            "email": email,
+            "password": password,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          });
+
+      var data = jsonDecode(response.body);
+      return ApiResponse.fromJson(data, (json) => LoginResult.fromjson(data));
     } catch (e, stacktrace) {
-      throw Exception('$stacktrace: $e');
+      throw Exception('line: $stacktrace: $e');
     }
   }
 
-  static login(String email, String password) async {
+  static Future<ApiResponse<RegisterResult>> register(String name, String email,
+      String password, String confirmPassword, String address) async {
     try {
-      var response = await http.post(Uri.http(domain, "api/login"),
-          body: jsonEncode({"email": email, "password": password}),
+      var response = await http.post(Uri.http(domain, "api/register"),
+          body: jsonEncode({
+            "name": name,
+            "email": email,
+            "password": password,
+            'password_confirmation': confirmPassword,
+            'address': address
+          }),
           headers: {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': 'true',
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE',
+            'Accept': 'application/json'
           });
+
       var data = jsonDecode(response.body);
-      return Auth.loginResult(data);
+      return ApiResponse.fromJson(
+          data, (json) => RegisterResult.fromjson(json));
     } catch (e, stacktrace) {
       throw Exception('line: $stacktrace: $e');
     }
@@ -88,12 +95,12 @@ class Auth {
         deletePrefer(context);
       }
       // return resJson;
-    } catch (e) {
-      return e;
+    } catch (e, stacktrace) {
+      throw Exception('line: $stacktrace: $e');
     }
   }
 
-  static checkAuth() async {
+  static authenticated() async {
     try {
       var pref = await SharedPreferences.getInstance();
       var token = pref.getString('AccessToken');
@@ -102,7 +109,7 @@ class Auth {
           ((X509Certificate cert, String host, int port) => true);
 
       var response =
-          await http.get(Uri.http(domain, "api/check-auth"), headers: {
+          await http.get(Uri.http(domain, "api/authenticated"), headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',

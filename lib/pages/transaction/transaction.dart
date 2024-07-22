@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kasir_mobile/components/barcode_camera.dart';
@@ -8,6 +9,7 @@ import 'package:kasir_mobile/pages/home/home_app.dart';
 import 'package:kasir_mobile/pages/transaction/confirm_transaction.dart';
 import 'package:kasir_mobile/pages/transaction/form_add_product.dart';
 import 'package:kasir_mobile/provider/get_product.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Transaction extends StatefulWidget {
   const Transaction({super.key, required this.typeTransaction});
@@ -28,6 +30,17 @@ class _TransactionState extends State<Transaction> {
   bool _isLoading = true;
   bool _buttonEnable = false;
   int fullStock = 0;
+  String? _accessToken;
+
+  Future<String?> _getAccessToken() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    return pref.getString("AccessToken");
+  }
+
+  Future<void> _initializeToken() async {
+    _accessToken = await _getAccessToken();
+    setState(() {});
+  }
 
   Future<List<Product>> getProduct() async {
     try {
@@ -47,6 +60,8 @@ class _TransactionState extends State<Transaction> {
         _isLoading = false;
       });
     });
+
+    _initializeToken();
   }
 
   void onQueryChanged(String query) {
@@ -196,15 +211,33 @@ class _TransactionState extends State<Transaction> {
                                         margin: const EdgeInsets.all(5),
                                         height: 50,
                                         width: 50,
-                                        decoration: BoxDecoration(
+                                        child: ClipRRect(
                                           borderRadius: const BorderRadius.all(
-                                            Radius.circular(5),
-                                          ),
-                                          image: DecorationImage(
-                                            image: NetworkImage(
-                                              "http://$domain/storage/images/${findProduct[index].image}",
-                                            ),
+                                              Radius.circular(5)),
+                                          child: CachedNetworkImage(
+                                            imageUrl:
+                                                "http://$domain/api/products/images/${findProduct[index].uuid}",
+                                            httpHeaders: {
+                                              "Authorization":
+                                                  "Bearer $_accessToken",
+                                              "Access-Control-Allow-Headers":
+                                                  "Access-Control-Allow-Origin, Accept"
+                                            },
                                             fit: BoxFit.cover,
+                                            placeholder: (context, url) =>
+                                                Container(
+                                              color: Colors.grey[300],
+                                              child: const Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              ),
+                                            ),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    Container(
+                                              color: Colors.grey[300],
+                                              child: const Icon(Icons.error),
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -366,7 +399,7 @@ class _TransactionState extends State<Transaction> {
                                                         uuid: findProduct[index]
                                                             .uuid,
                                                         image:
-                                                            "http://$domain/storage/images/${findProduct[index].image}",
+                                                            "http://$domain/api/products/images/${findProduct[index].uuid}",
                                                         id: findProduct[index]
                                                             .id,
                                                         name: findProduct[index]
