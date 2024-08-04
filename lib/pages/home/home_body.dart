@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kasir_mobile/pages/management/management.dart';
 import 'package:kasir_mobile/pages/report/report_page.dart';
-import 'package:kasir_mobile/pages/transaction/transaction.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeBody extends StatefulWidget {
@@ -14,19 +14,16 @@ class HomeBody extends StatefulWidget {
 
 class _HomeBodyState extends State<HomeBody> {
   void buyProduct(BuildContext context) {
-    Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) =>
-            const Transaction(typeTransaction: "Pembelian Barang")));
+    Navigator.pushReplacementNamed(context, '/transaction',
+        arguments: {'typeTransaction': 'Pembelian Barang'});
+    // Navigator.of(context).pushReplacement(MaterialPageRoute(
+    //     builder: (context) =>
+    //         const Transaction(typeTransaction: "Pembelian Barang")));
   }
 
   void createTransaction(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const Transaction(
-          typeTransaction: "Transaksi",
-        ),
-      ),
-    );
+    Navigator.pushNamed(context, "/transaction",
+        arguments: {"typeTransaction": "Transaksi"});
   }
 
   void raport() {
@@ -44,7 +41,7 @@ class _HomeBodyState extends State<HomeBody> {
 
   String _dateNow() {
     DateTime now = DateTime.now();
-    return DateFormat("EEEE d MMMM").format(now);
+    return DateFormat("EEEE, d MMMM").format(now);
   }
 
   @override

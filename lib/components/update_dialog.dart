@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:kasir_mobile/provider/update_product.dart';
+import 'package:kasir_mobile/provider/update_product_provider.dart';
 
 class UpdateDialog {
   UpdateDialog({required this.dataProduct});

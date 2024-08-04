@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kasir_mobile/pages/report/daily_report.dart';
-import 'package:kasir_mobile/provider/get_monthly_purchase.dart';
+import 'package:kasir_mobile/provider/get_monthly_purchase_provider.dart';
 
 class ListMounthlyPurchaseReport extends StatefulWidget {
   const ListMounthlyPurchaseReport(

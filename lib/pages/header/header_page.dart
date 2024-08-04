@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kasir_mobile/provider/auth.dart';
+import 'package:kasir_mobile/provider/auth_provider.dart';
 
 class Header extends StatefulWidget {
   const Header({super.key});

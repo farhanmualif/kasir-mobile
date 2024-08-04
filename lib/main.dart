@@ -4,6 +4,12 @@ import 'package:kasir_mobile/pages/auth/login_page.dart';
 import 'package:kasir_mobile/pages/auth/register_page.dart';
 import 'package:kasir_mobile/pages/home/home_app.dart';
 import 'package:kasir_mobile/pages/home/splash.dart';
+import 'package:kasir_mobile/pages/transaction/add_product_page.dart';
+import 'package:kasir_mobile/pages/transaction/barcode_scanner_result_page.dart';
+import 'package:kasir_mobile/pages/transaction/cart_page.dart';
+import 'package:kasir_mobile/pages/transaction/payment_page.dart';
+import 'package:kasir_mobile/pages/transaction/payment_done_page.dart';
+import 'package:kasir_mobile/pages/transaction/transaction_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,7 +20,6 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -29,10 +34,59 @@ class MyApp extends StatelessWidget {
           key: key,
         ),
       ),
-      routes: {
-        "/login": (context) => const LoginPage(),
-        "/register": (context) => const RegisterPage(),
-        "/home": (context) => const HomeApp()
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case '/login':
+            return MaterialPageRoute(builder: (context) => const LoginPage());
+          case '/register':
+            return MaterialPageRoute(
+                builder: (context) => const RegisterPage());
+          case '/home':
+            return MaterialPageRoute(builder: (context) => const HomeApp());
+          case '/form-add-product':
+            return MaterialPageRoute(
+                builder: (context) => const AddProoductPage());
+          case '/transaction':
+            final args = settings.arguments as Map<String, dynamic>;
+            return MaterialPageRoute(
+                builder: (context) => TransactionPage(
+                      typeTransaction: args["typeTransaction"],
+                    ));
+          case '/barcode-scanner-result':
+            final args = settings.arguments as Map<String, dynamic>;
+            return MaterialPageRoute(
+                builder: (context) => BarcodeScannerResult(
+                      product: args["product"],
+                      typeTransaction: args["typeTransaction"],
+                    ));
+          case '/cart':
+            final args = settings.arguments as Map<String, dynamic>;
+            return MaterialPageRoute(
+              builder: (context) => CartPage(
+                typeTransaction: args['typeTransaction'],
+                subTotalPrice: args['totalPrice'],
+                listTransaction: args['listTransaction'],
+              ),
+            );
+          case '/payment':
+            final args = settings.arguments as Map<String, dynamic>;
+            return MaterialPageRoute(
+              builder: (context) => PaymentPage(
+                totalPrice: args['totalPrice'],
+                listTransaction: args['listTransaction'],
+              ),
+            );
+          case '/payment-done':
+            var args = settings.arguments as Map<String, dynamic>;
+            return MaterialPageRoute(
+              builder: (context) => PaymentDone(
+                  typeTransaction: args['typeTransaction'],
+                  noTransaction: args['noTransaction'],
+                  change: args['change']),
+            );
+          default:
+            return null;
+        }
       },
     );
   }

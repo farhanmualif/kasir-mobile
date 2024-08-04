@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kasir_mobile/provider/get_daily_purchase.dart';
+import 'package:kasir_mobile/provider/get_daily_purchase_provider.dart';
 
 class ListDailyPurchaseReport extends StatefulWidget {
   const ListDailyPurchaseReport({super.key, required this.date});

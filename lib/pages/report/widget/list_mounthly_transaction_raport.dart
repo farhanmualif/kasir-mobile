@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kasir_mobile/interface/api_response_interface.dart';
 import 'package:kasir_mobile/interface/raport/monthly_transactions.dart';
 import 'package:kasir_mobile/pages/report/daily_report.dart';
-import 'package:kasir_mobile/provider/get_monthly_transaction.dart';
+import 'package:kasir_mobile/provider/get_monthly_transaction_provider.dart';
 
 class ListMounthlyTransactionRaport extends StatefulWidget {
   const ListMounthlyTransactionRaport(

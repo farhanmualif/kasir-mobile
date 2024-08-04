@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kasir_mobile/provider/post_category.dart';
+import 'package:kasir_mobile/provider/post_category_provider.dart';
 
 class AddCategory extends StatefulWidget {
   const AddCategory({super.key});

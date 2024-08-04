@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kasir_mobile/provider/update_category.dart';
+import 'package:kasir_mobile/provider/update_category_provider.dart';
 
 class CategoryModifier extends StatefulWidget {
   const CategoryModifier(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ConfirmTransactionComponent extends StatefulWidget {
-  const ConfirmTransactionComponent(
+class ConfirmTransaction extends StatefulWidget {
+  const ConfirmTransaction(
       {super.key,
       required this.index,
       required this.name,
@@ -14,16 +14,14 @@ class ConfirmTransactionComponent extends StatefulWidget {
   final int count;
 
   @override
-  State<ConfirmTransactionComponent> createState() =>
-      _ConfirmTransactionComponentState();
+  State<ConfirmTransaction> createState() => _ConfirmTransaction();
 }
 
-class _ConfirmTransactionComponentState
-    extends State<ConfirmTransactionComponent> {
+class _ConfirmTransaction extends State<ConfirmTransaction> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin:const EdgeInsets.all(10),
+      margin: const EdgeInsets.all(10),
       child: Column(
         children: [
           Row(

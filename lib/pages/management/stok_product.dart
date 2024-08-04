@@ -6,8 +6,8 @@ import 'package:kasir_mobile/components/update_dialog.dart';
 import 'package:kasir_mobile/helper/format_cuurency.dart';
 import 'package:kasir_mobile/interface/api_response_interface.dart';
 import 'package:kasir_mobile/interface/product_interface.dart';
-import 'package:kasir_mobile/provider/delete_product.dart';
-import 'package:kasir_mobile/provider/get_product.dart';
+import 'package:kasir_mobile/provider/delete_product_provider.dart';
+import 'package:kasir_mobile/provider/get_all_product_provider.dart';
 
 class StokProductManagement extends StatefulWidget {
   const StokProductManagement({super.key});
@@ -23,7 +23,7 @@ class _StokProductManagementState extends State<StokProductManagement> {
 
   Future<List<Product>> getProduct() async {
     try {
-      var response = await GetProduct.getProduct(); //
+      var response = await GetAllProduct.getAllProduct(); //
       return response.data;
     } catch (e) {
       rethrow;
@@ -187,8 +187,7 @@ class _StokProductManagementState extends State<StokProductManagement> {
                                         fontWeight: FontWeight.bold),
                                   ),
                                   Text(
-                                    convertToIdr(
-                                        findProduct[index].sellingPrice),
+                                    convertToIdr(findProduct[index].price),
                                     style: const TextStyle(fontSize: 13),
                                   ),
                                   Row(

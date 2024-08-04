@@ -30,7 +30,7 @@ class UpdateProduct {
         "add_or_reduce_stock": addOrreduceStock,
       };
 
-      var response = await http.put(Uri.http(domain, "api/products/$uuid"),
+      var response = await http.put(Uri.parse("$domain/api/products/$uuid"),
           body: jsonEncode(body),
           headers: {
             "Content-Type": "application/json",

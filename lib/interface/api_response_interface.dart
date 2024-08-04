@@ -11,8 +11,12 @@ class ApiResponse<T> {
 
   factory ApiResponse.fromJson(
     Map<String, dynamic> json,
-    T Function(Map<String, dynamic> json) fromJsonT,
+    T Function(dynamic json) fromJsonT,
   ) {
+    if (json['status'] == false) {
+      return ApiResponse(
+          status: json["status"], message: json["message"], data: null);
+    }
     return ApiResponse<T>(
       status: json['status'] ?? false,
       message: json['message'] ?? '',

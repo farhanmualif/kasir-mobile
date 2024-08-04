@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:kasir_mobile/helper/get_access_token.dart';
 import 'package:kasir_mobile/interface/api_response_interface.dart';
 import 'package:kasir_mobile/interface/check_auth_interface.dart';
 import 'package:kasir_mobile/interface/login_result_interface.dart';
@@ -34,17 +35,15 @@ class Auth {
     String password,
   ) async {
     try {
-      var response = await http.post(Uri.http(domain, "api/login"),
-          body: jsonEncode({
-            "email": email,
-            "password": password,
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          });
+      http.Response response =
+          await http.post(Uri.parse('$domain/api/login'), body: {
+        "email": email,
+        "password": password,
+      }, headers: {
+        'Accept': 'application/json',
+      });
 
-      var data = jsonDecode(response.body);
+      var data = json.decode(response.body);
       return ApiResponse.fromJson(data, (json) => LoginResult.fromjson(data));
     } catch (e, stacktrace) {
       throw Exception('line: $stacktrace: $e');
@@ -54,7 +53,7 @@ class Auth {
   static Future<ApiResponse<RegisterResult>> register(String name, String email,
       String password, String confirmPassword, String address) async {
     try {
-      var response = await http.post(Uri.http(domain, "api/register"),
+      var response = await http.post(Uri.parse('$domain/api/register'),
           body: jsonEncode({
             "name": name,
             "email": email,
@@ -67,7 +66,7 @@ class Auth {
             'Accept': 'application/json'
           });
 
-      var data = jsonDecode(response.body);
+      var data = json.decode(response.body);
       return ApiResponse.fromJson(
           data, (json) => RegisterResult.fromjson(json));
     } catch (e, stacktrace) {
@@ -79,17 +78,12 @@ class Auth {
     try {
       var pref = await SharedPreferences.getInstance();
       var token = pref.getString('AccessToken');
-      var response = await http.post(
-          Uri.http(
-            domain,
-            "api/logout",
-          ),
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': 'Bearer $token',
-          });
-      var resJson = jsonDecode(response.body);
+      var response = await http.post(Uri.parse('$domain/api/logout'), headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      });
+      var resJson = json.decode(response.body);
       if (resJson['status']) {
         // ignore: use_build_context_synchronously
         deletePrefer(context);
@@ -102,20 +96,20 @@ class Auth {
 
   static authenticated() async {
     try {
-      var pref = await SharedPreferences.getInstance();
-      var token = pref.getString('AccessToken');
+      var token = await AccessTokenProvider.token();
       final httpClient = HttpClient();
       httpClient.badCertificateCallback =
           ((X509Certificate cert, String host, int port) => true);
 
       var response =
-          await http.get(Uri.http(domain, "api/authenticated"), headers: {
+          await http.get(Uri.parse('$domain/api/authenticated'), headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
       });
 
-      var responseJson = jsonDecode(response.body);
+      var responseJson = json.decode(response.body);
+
       CheckAuthResponse res = CheckAuthResponse.fromJson(responseJson);
 
       if (response.statusCode == 200) {

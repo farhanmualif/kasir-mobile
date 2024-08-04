@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:kasir_mobile/helper/format_cuurency.dart';
 import 'package:kasir_mobile/pages/management/add_category.dart';
 import 'package:kasir_mobile/pages/management/edit_category.dart';
-import 'package:kasir_mobile/provider/delete_category.dart';
-import 'package:kasir_mobile/provider/get_category.dart';
+import 'package:kasir_mobile/provider/delete_category_provider.dart';
+import 'package:kasir_mobile/provider/get_category_provider.dart';
 
 class ProductCategory extends StatefulWidget {
   const ProductCategory({super.key});

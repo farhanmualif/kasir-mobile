@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kasir_mobile/interface/check_auth_interface.dart';
 import 'package:kasir_mobile/pages/auth/login_page.dart';
 import 'package:kasir_mobile/pages/home/home_app.dart';
-import 'package:kasir_mobile/provider/auth.dart';
+import 'package:kasir_mobile/provider/auth_provider.dart';
 
 class Splash extends StatefulWidget {
   const Splash({super.key});

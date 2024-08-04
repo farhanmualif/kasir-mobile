@@ -1,50 +1,78 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kasir_mobile/components/barcode_camera.dart';
 import 'package:kasir_mobile/helper/format_cuurency.dart';
+import 'package:kasir_mobile/helper/get_access_token.dart';
 import 'package:kasir_mobile/interface/product_interface.dart';
-import 'package:kasir_mobile/interface/transaction_interface.dart';
 import 'package:kasir_mobile/pages/home/home_app.dart';
-import 'package:kasir_mobile/pages/transaction/confirm_transaction.dart';
-import 'package:kasir_mobile/pages/transaction/form_add_product.dart';
-import 'package:kasir_mobile/provider/get_product.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:kasir_mobile/provider/get_all_product_provider.dart';
+import 'package:kasir_mobile/provider/get_product_by_barcode.dart';
+import 'package:kasir_mobile/themes/AppColors.dart';
 
-class Transaction extends StatefulWidget {
-  const Transaction({super.key, required this.typeTransaction});
+class TransactionPage extends StatefulWidget {
+  const TransactionPage({super.key, required this.typeTransaction});
 
   final String typeTransaction;
 
   @override
-  State<Transaction> createState() => _TransactionState();
+  State<TransactionPage> createState() => _TransactionPageState();
 }
 
-class _TransactionState extends State<Transaction> {
-  int count = 0;
-  var domain = dotenv.env['BASE_URL'];
-  List<TransactionData> transactions = [];
-  List<Product> findProduct = [];
+class _TransactionPageState extends State<TransactionPage>
+    with AccessTokenProvider {
   final searchBarController = TextEditingController();
-  int subTotal = 0;
-  bool _isLoading = true;
-  bool _buttonEnable = false;
-  int fullStock = 0;
-  String? _accessToken;
 
-  Future<String?> _getAccessToken() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    return pref.getString("AccessToken");
-  }
+  // initial each count controller
+  Map<int, TextEditingController> countControllers = {};
+
+  var domain = dotenv.env['BASE_URL'];
+  List<Product> transactions = [];
+  List<Product> findProduct = [];
+  String? _accessToken;
+  bool _buttonEnable = false;
+  bool _isLoading = true;
+  int fullStock = 0;
+  int subTotal = 0;
 
   Future<void> _initializeToken() async {
-    _accessToken = await _getAccessToken();
-    setState(() {});
+    _accessToken = await getToken();
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  Map<int, Map<String, dynamic>> groupedListTransactions(
+      List<Product> transactions) {
+    Map<int, Map<String, dynamic>> groupedProducts = {};
+
+    for (var product in transactions) {
+      int id = product.id;
+      if (groupedProducts.containsKey(id)) {
+        groupedProducts[id]!['count']++;
+      } else {
+        groupedProducts[id] = {
+          'id': product.id,
+          'uuid': product.uuid,
+          'barcode': product.barcode,
+          'name': product.name,
+          'price': product.price,
+          'purchasePrice': product.purchasePrice,
+          'count': 1,
+          'remaining': product.remaining,
+          'image': product.image
+        };
+      }
+    }
+
+    return groupedProducts;
   }
 
   Future<List<Product>> getProduct() async {
     try {
-      var response = await GetProduct.getProduct(); //
+      var response = await GetAllProduct.getAllProduct();
       return response.data;
     } catch (e) {
       rethrow;
@@ -55,25 +83,67 @@ class _TransactionState extends State<Transaction> {
   void initState() {
     super.initState();
     getProduct().then((value) {
-      setState(() {
-        findProduct = value;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          findProduct = value;
+          _isLoading = false;
+          // initial controller for each product
+          for (var product in findProduct) {
+            countControllers[product.id] = TextEditingController(text: '0');
+          }
+        });
+      }
     });
 
     _initializeToken();
   }
 
+  @override
+  void dispose() {
+    // remove controller when widget dispose
+    for (var controller in countControllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  void updateProductCount(Product product, int count) {
+    setState(() {
+      transactions.removeWhere((element) => element.id == product.id);
+      for (int i = 0; i < count; i++) {
+        transactions.add(
+          Product.set(
+            purchasePrice: product.purchasePrice,
+            barcode: product.barcode,
+            uuid: product.uuid,
+            image: "$domain/api/products/images/${product.uuid}",
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            remaining: product.stock,
+            selected: 1,
+          ),
+        );
+      }
+      subTotal = transactions.fold(0, (sum, item) => sum + item.price.toInt());
+      _buttonEnable = transactions.isNotEmpty;
+    });
+  }
+
   void onQueryChanged(String query) {
     getProduct().then((products) {
-      setState(() {
-        findProduct = products
-            .where((item) =>
-                item.name.toLowerCase().contains(query.toLowerCase()) ||
-                (item.barcode != null &&
-                    item.barcode!.toLowerCase().contains(query.toLowerCase())))
-            .toList();
-      });
+      if (mounted) {
+        setState(() {
+          findProduct = products
+              .where((item) =>
+                  item.name.toLowerCase().contains(query.toLowerCase()) ||
+                  (item.barcode != null &&
+                      item.barcode!
+                          .toLowerCase()
+                          .contains(query.toLowerCase())))
+              .toList();
+        });
+      }
     });
   }
 
@@ -90,7 +160,7 @@ class _TransactionState extends State<Transaction> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            // Tambahkan logika untuk kembali ke halaman sebelumnya
+            // logic for back to before page
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -137,29 +207,24 @@ class _TransactionState extends State<Transaction> {
                   Expanded(
                     flex: -1,
                     child: GestureDetector(
-                      onTap: () async {
-                        try {
-                          var barcodeResult = await BarcodeCamera().scanner();
-
-                          setState(() {
-                            searchBarController.text = barcodeResult;
-                          });
-                        } catch (e) {
-                          rethrow;
-                        }
-                      },
+                      onTap: () => handleBarcodeScan(context),
                       child: const Image(
                           image: AssetImage("assets/images/barcode.png")),
                     ),
                   ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Container(
+                      margin: const EdgeInsets.only(right: 10),
+                      child: const Icon(Icons.qr_code_2)),
                 ],
               ),
             ),
             if (widget.typeTransaction == "Pembelian Barang")
               GestureDetector(
                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const FormAddProductPage()));
+                  Navigator.pushNamed(context, "/form-add-product");
                 },
                 child: Container(
                   height: 60,
@@ -196,7 +261,9 @@ class _TransactionState extends State<Transaction> {
                 children: [
                   _isLoading
                       ? const Center(
-                          child: CircularProgressIndicator(),
+                          child: CircularProgressIndicator(
+                            color: AppColors.primary,
+                          ),
                         )
                       : ListView.builder(
                           itemCount: findProduct.length,
@@ -216,7 +283,7 @@ class _TransactionState extends State<Transaction> {
                                               Radius.circular(5)),
                                           child: CachedNetworkImage(
                                             imageUrl:
-                                                "http://$domain/api/products/images/${findProduct[index].uuid}",
+                                                "$domain/api/products/images/${findProduct[index].uuid}",
                                             httpHeaders: {
                                               "Authorization":
                                                   "Bearer $_accessToken",
@@ -229,7 +296,9 @@ class _TransactionState extends State<Transaction> {
                                               color: Colors.grey[300],
                                               child: const Center(
                                                 child:
-                                                    CircularProgressIndicator(),
+                                                    CircularProgressIndicator(
+                                                  color: AppColors.primary,
+                                                ),
                                               ),
                                             ),
                                             errorWidget:
@@ -269,8 +338,7 @@ class _TransactionState extends State<Transaction> {
                                               ),
                                               Text(
                                                   convertToIdr(
-                                                      findProduct[index]
-                                                          .sellingPrice),
+                                                      findProduct[index].price),
                                                   style: const TextStyle(
                                                       fontSize: 10))
                                             ],
@@ -296,38 +364,45 @@ class _TransactionState extends State<Transaction> {
                                                 ),
                                               );
                                             } else {
-                                              setState(() {
-                                                if (transactions.isNotEmpty) {
-                                                  final lastIndexs =
-                                                      transactions
-                                                          .lastIndexWhere(
-                                                              (element) =>
-                                                                  element.id ==
-                                                                  findProduct[
-                                                                          index]
-                                                                      .id);
-
-                                                  if (lastIndexs != -1) {
-                                                    subTotal -=
-                                                        transactions[lastIndexs]
-                                                            .price
-                                                            .toInt();
-                                                    transactions
-                                                        .removeAt(lastIndexs);
-                                                  }
-                                                }
-                                              });
-
-                                              if (fullStock >= 1) {
+                                              if (mounted) {
                                                 setState(() {
-                                                  fullStock--;
+                                                  if (transactions.isNotEmpty) {
+                                                    final lastIndexs =
+                                                        transactions
+                                                            .lastIndexWhere(
+                                                                (element) =>
+                                                                    element
+                                                                        .id ==
+                                                                    findProduct[
+                                                                            index]
+                                                                        .id);
+
+                                                    if (lastIndexs != -1) {
+                                                      subTotal -= transactions[
+                                                              lastIndexs]
+                                                          .price
+                                                          .toInt();
+                                                      transactions
+                                                          .removeAt(lastIndexs);
+                                                    }
+                                                  }
                                                 });
                                               }
 
+                                              if (fullStock >= 1) {
+                                                if (mounted) {
+                                                  setState(() {
+                                                    fullStock--;
+                                                  });
+                                                }
+                                              }
+
                                               if (fullStock < 1) {
-                                                setState(() {
-                                                  _buttonEnable = true;
-                                                });
+                                                if (mounted) {
+                                                  setState(() {
+                                                    _buttonEnable = true;
+                                                  });
+                                                }
                                               }
                                             }
                                           },
@@ -358,12 +433,45 @@ class _TransactionState extends State<Transaction> {
                                               borderRadius: BorderRadius.all(
                                                   Radius.circular(5))),
                                           child: Center(
-                                              child: Text(transactions
-                                                  .where((element) =>
-                                                      element.id ==
-                                                      findProduct[index].id)
-                                                  .length
-                                                  .toString())),
+                                              child: widget.typeTransaction ==
+                                                      "Pembelian Barang"
+                                                  ? Center(
+                                                      child: TextField(
+                                                        controller:
+                                                            countControllers[
+                                                                findProduct[
+                                                                        index]
+                                                                    .id],
+                                                        keyboardType:
+                                                            TextInputType
+                                                                .number,
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        decoration:
+                                                            const InputDecoration(
+                                                          border:
+                                                              InputBorder.none,
+                                                          contentPadding:
+                                                              EdgeInsets.zero,
+                                                        ),
+                                                        onChanged: (value) {
+                                                          int count =
+                                                              int.tryParse(
+                                                                      value) ??
+                                                                  0;
+                                                          updateProductCount(
+                                                              findProduct[
+                                                                  index],
+                                                              count);
+                                                        },
+                                                      ),
+                                                    )
+                                                  : Text(transactions
+                                                      .where((element) =>
+                                                          element.id ==
+                                                          findProduct[index].id)
+                                                      .length
+                                                      .toString())),
                                         ),
                                         GestureDetector(
                                           onTap: () {
@@ -387,10 +495,17 @@ class _TransactionState extends State<Transaction> {
                                                           findProduct[index].id)
                                                       .length <
                                                   findProduct[index].stock) {
-                                                setState(() {
-                                                  transactions.add(
-                                                    TransactionData.set(
-                                                        purcahsePrice:
+                                                if (mounted) {
+                                                  setState(() {
+                                                    int.parse(countControllers[
+                                                                findProduct[
+                                                                        index]
+                                                                    .id]!
+                                                            .text) +
+                                                        1;
+                                                    transactions.add(
+                                                      Product.set(
+                                                        purchasePrice:
                                                             findProduct[index]
                                                                 .purchasePrice,
                                                         barcode:
@@ -399,24 +514,27 @@ class _TransactionState extends State<Transaction> {
                                                         uuid: findProduct[index]
                                                             .uuid,
                                                         image:
-                                                            "http://$domain/api/products/images/${findProduct[index].uuid}",
+                                                            "$domain/api/products/images/${findProduct[index].uuid}",
                                                         id: findProduct[index]
                                                             .id,
                                                         name: findProduct[index]
                                                             .name,
                                                         price:
                                                             findProduct[index]
-                                                                .sellingPrice,
+                                                                .price,
                                                         remaining:
                                                             findProduct[index]
                                                                 .stock,
-                                                        selected: 1),
-                                                  );
-                                                  subTotal += findProduct[index]
-                                                      .sellingPrice
-                                                      .toInt();
-                                                  _buttonEnable = true;
-                                                });
+                                                        selected: 1,
+                                                      ),
+                                                    );
+                                                    subTotal +=
+                                                        findProduct[index]
+                                                            .price
+                                                            .toInt();
+                                                    _buttonEnable = true;
+                                                  });
+                                                }
                                               }
                                             }
                                           },
@@ -459,15 +577,13 @@ class _TransactionState extends State<Transaction> {
                         onPressed: _buttonEnable
                             ? () {
                                 if (transactions.isNotEmpty) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ConfirmTransaction(
-                                        listTransaction: transactions,
-                                        typeTransaction: widget.typeTransaction,
-                                      ),
-                                    ),
-                                  );
+                                  Navigator
+                                      .pushNamed(context, '/cart', arguments: {
+                                    'listTransaction':
+                                        groupedListTransactions(transactions),
+                                    'typeTransaction': widget.typeTransaction,
+                                    'totalPrice': subTotal
+                                  });
                                 }
                               }
                             : null,
@@ -509,5 +625,66 @@ class _TransactionState extends State<Transaction> {
         ),
       ),
     );
+  }
+
+  Future<Product> getProductByBarcode(String barcode) async {
+    try {
+      var product = await GetProductByBarcode.getProduct(barcode);
+      return product.data!;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<void> handleBarcodeScan(BuildContext context) async {
+    try {
+      if (mounted) {
+        setState(() {
+          _isLoading = true;
+        });
+      }
+
+      var barcodeResult = await BarcodeCamera().scanner();
+
+      if (barcodeResult == '-1') {
+        if (context.mounted) {
+          Navigator.pushReplacementNamed(context, '/transaction',
+              arguments: {'typeTransaction': widget.typeTransaction});
+          return;
+        }
+      }
+
+      if (!mounted) return;
+
+      // searchBarController.text = barcodeResult;
+      Product result = await getProductByBarcode(barcodeResult);
+      if (context.mounted) {
+        Navigator.pushNamed(context, '/barcode-scanner-result', arguments: {
+          'product': result,
+          'typeTransaction': widget.typeTransaction,
+        });
+      }
+    } on PlatformException catch (e) {
+      // Handle error
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content:
+                  Text('Izin kamera tidak diizinkan oleh si pengguna: $e')),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.toString()}')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 }

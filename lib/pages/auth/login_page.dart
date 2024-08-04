@@ -3,7 +3,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kasir_mobile/interface/api_response_interface.dart';
 import 'package:kasir_mobile/interface/login_result_interface.dart';
 import 'package:kasir_mobile/main.dart';
-import 'package:kasir_mobile/provider/auth.dart';
+import 'package:kasir_mobile/provider/auth_provider.dart';
+import 'package:kasir_mobile/themes/AppColors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -31,7 +32,10 @@ class _LoginPageState extends State<LoginPage> {
 
   void _login(BuildContext context, String email, String password) async {
     try {
+      debugPrint("email: $email");
+      debugPrint("password: $password");
       ApiResponse<LoginResult> response = await Auth.login(email, password);
+      debugPrint("result: ${response.message}");
 
       if (response != null) {
         if (response.status == false) {
@@ -192,7 +196,7 @@ class _LoginPageState extends State<LoginPage> {
                                 }
                               },
                               style: TextButton.styleFrom(
-                                  backgroundColor: const Color(0xff076A68),
+                                  backgroundColor: AppColors.primary,
                                   padding: const EdgeInsets.only(
                                       left: 40, right: 40, top: 10, bottom: 10),
                                   shape: RoundedRectangleBorder(

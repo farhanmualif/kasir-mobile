@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kasir_mobile/interface/api_response_interface.dart';
 import 'package:kasir_mobile/interface/register_result_interface.dart';
-import 'package:kasir_mobile/provider/auth.dart';
+import 'package:kasir_mobile/provider/auth_provider.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -242,34 +242,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                             Radius.circular(10))),
                                     label: const Text('Konfirmasi Password'),
                                     border: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(10),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                margin:
-                                    const EdgeInsets.only(top: 5, bottom: 20),
-                                child: TextFormField(
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return "Alamat toko tidak boleh kosong";
-                                    }
-                                    return null;
-                                  },
-                                  controller: addressController,
-                                  cursorColor: const Color(0xff076A68),
-                                  decoration: const InputDecoration(
-                                    enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: Color(0xff076A68),
-                                        ),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(10))),
-                                    label: Text('Alamat Toko'),
-                                    border: OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                         Radius.circular(10),
                                       ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kasir_mobile/pages/struk.dart';
-import 'package:kasir_mobile/provider/get_daily_transaction.dart';
+import 'package:kasir_mobile/provider/get_daily_transaction_provider.dart';
 
 class ListDailyTransactionReport extends StatefulWidget {
   const ListDailyTransactionReport({super.key, required this.date});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kasir_mobile/pages/report/monthly_report.dart';
-import 'package:kasir_mobile/provider/get_year_transaction.dart';
+import 'package:kasir_mobile/provider/get_year_transaction_provider.dart';
 
 class ListAnualTransactionReport extends StatefulWidget {
   const ListAnualTransactionReport(

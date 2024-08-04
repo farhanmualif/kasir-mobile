@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:kasir_mobile/helper/format_cuurency.dart';
 import 'package:kasir_mobile/interface/response_transaction_interface.dart';
-import 'package:kasir_mobile/pages/transaction/payment_done.dart';
-import 'package:kasir_mobile/provider/post_transaction.dart';
+import 'package:kasir_mobile/provider/post_transaction_provider.dart';
 
-class Payment extends StatefulWidget {
-  const Payment(
+class PaymentPage extends StatefulWidget {
+  const PaymentPage(
       {super.key, required this.totalPrice, required this.listTransaction});
 
   final dynamic listTransaction;
   final int totalPrice;
 
   @override
-  State<Payment> createState() => _PaymentState();
+  State<PaymentPage> createState() => _PaymentPageState();
 }
 
-class _PaymentState extends State<Payment> {
+class _PaymentPageState extends State<PaymentPage> {
   String nominal = "0";
 
   @override
@@ -82,16 +81,11 @@ class _PaymentState extends State<Payment> {
               final result = snapshot.data!;
               if (result.status == true) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PaymentDone(
-                        change: change,
-                        noTransaction: result.data?.noTransaction,
-                        typeTransaction: "Transaksi",
-                      ),
-                    ),
-                  );
+                  Navigator.pushNamed(context, "/payment-done", arguments: {
+                    'change': change,
+                    'noTransaaction': result.data?.noTransaction,
+                    'typeTransaction': "Transaksi"
+                  });
                 });
               } else if (result.data == null) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {

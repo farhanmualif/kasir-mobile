@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kasir_mobile/pages/struk.dart';
-import 'package:kasir_mobile/pages/transaction/transaction.dart';
+
 
 // ignore: must_be_immutable
 class PaymentDone extends StatelessWidget {
@@ -30,13 +30,15 @@ class PaymentDone extends StatelessWidget {
           ),
           child: GestureDetector(
               onTap: () {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (context) => Transaction(
-                      typeTransaction: typeTransaction,
-                    ),
-                  ),
-                );
+                Navigator.pushReplacementNamed(context, '/transaction',
+                    arguments: {'typeTransaction': typeTransaction});
+                // Navigator.of(context).pushReplacement(
+                //   MaterialPageRoute(
+                //     builder: (context) => Transaction(
+                //       typeTransaction: typeTransaction,
+                //     ),
+                //   ),
+                // );
               },
               child: const Icon(
                 Icons.done,
