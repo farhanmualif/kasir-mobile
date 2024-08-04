@@ -26,7 +26,7 @@ class _TransactionPageState extends State<TransactionPage>
   final searchBarController = TextEditingController();
 
   // initial each count controller
-  Map<int, TextEditingController> countControllers = {};
+  Map<int, TextEditingController> countItemProductController = {};
 
   var domain = dotenv.env['BASE_URL'];
   List<Product> transactions = [];
@@ -89,7 +89,8 @@ class _TransactionPageState extends State<TransactionPage>
           _isLoading = false;
           // initial controller for each product
           for (var product in findProduct) {
-            countControllers[product.id] = TextEditingController(text: '0');
+            countItemProductController[product.id] =
+                TextEditingController(text: '0');
           }
         });
       }
@@ -101,7 +102,7 @@ class _TransactionPageState extends State<TransactionPage>
   @override
   void dispose() {
     // remove controller when widget dispose
-    for (var controller in countControllers.values) {
+    for (var controller in countItemProductController.values) {
       controller.dispose();
     }
     super.dispose();
@@ -438,7 +439,7 @@ class _TransactionPageState extends State<TransactionPage>
                                                   ? Center(
                                                       child: TextField(
                                                         controller:
-                                                            countControllers[
+                                                            countItemProductController[
                                                                 findProduct[
                                                                         index]
                                                                     .id],
@@ -497,7 +498,7 @@ class _TransactionPageState extends State<TransactionPage>
                                                   findProduct[index].stock) {
                                                 if (mounted) {
                                                   setState(() {
-                                                    int.parse(countControllers[
+                                                    int.parse(countItemProductController[
                                                                 findProduct[
                                                                         index]
                                                                     .id]!
@@ -627,10 +628,10 @@ class _TransactionPageState extends State<TransactionPage>
     );
   }
 
-  Future<Product> getProductByBarcode(String barcode) async {
+  Future<Product?> getProductByBarcode(String barcode) async {
     try {
       var product = await GetProductByBarcode.getProduct(barcode);
-      return product.data!;
+      return product.data;
     } catch (e) {
       throw Exception(e.toString());
     }
@@ -657,7 +658,20 @@ class _TransactionPageState extends State<TransactionPage>
       if (!mounted) return;
 
       // searchBarController.text = barcodeResult;
-      Product result = await getProductByBarcode(barcodeResult);
+      Product? result = await getProductByBarcode(barcodeResult);
+      if (result == null) {
+        if (context.mounted) {
+          Navigator.pushReplacementNamed(context, '/transaction',
+              arguments: {'typeTransaction': widget.typeTransaction});
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('produk tidak ditemukan'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+      }
       if (context.mounted) {
         Navigator.pushNamed(context, '/barcode-scanner-result', arguments: {
           'product': result,

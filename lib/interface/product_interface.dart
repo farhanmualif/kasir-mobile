@@ -58,6 +58,7 @@ class Product {
       id: json['id'],
       uuid: json['uuid'],
       name: json['name'],
+      barcode: json['barcode'],
       category: (json['category'] as List<dynamic>?)
           ?.map((e) => CategoryProduct.fromJson(e))
           .toList(),

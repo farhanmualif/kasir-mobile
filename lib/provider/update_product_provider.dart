@@ -30,25 +30,30 @@ class UpdateProduct {
         "add_or_reduce_stock": addOrreduceStock,
       };
 
+      // "name": "stella",
+      // "barcode": "8992745999881",
+      // "add_or_reduce_stock": "add",
+      // "quantity_stok": 10,
+      // "selling_price": 2000,
+      // "purchase_price": 3000
+
       var response = await http.put(Uri.parse("$domain/api/products/$uuid"),
-          body: jsonEncode(body),
+          body: json.encode(body),
           headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
             'Authorization': 'Bearer $token'
           });
 
-      if (response.statusCode == 200) {
-        final resBody = jsonDecode(response.body);
-        return ApiResponse.fromJson(
-          resBody,
-          (json) => json is Map<String, dynamic>
-              ? ProductUpdateResponse.fromJson(json)
-              : throw ArgumentError('Invalid JSON format'),
-        );
-      } else {
-        throw Exception('Failed to load data');
-      }
+      final resBody = jsonDecode(response.body);
+      print("req.body: ${json.encode(body)}");
+      print("response.body: ${response.body}");
+      return ApiResponse.fromJson(
+        resBody,
+        (json) => json is Map<String, dynamic>
+            ? ProductUpdateResponse.fromJson(json)
+            : throw ArgumentError('Invalid JSON format'),
+      );
     } catch (e) {
       rethrow;
     }

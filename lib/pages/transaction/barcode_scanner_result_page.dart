@@ -8,10 +8,13 @@ import 'package:kasir_mobile/interface/product_interface.dart';
 import 'package:kasir_mobile/provider/get_product_by_barcode.dart';
 
 class BarcodeScannerResult extends StatefulWidget {
-  const BarcodeScannerResult(
-      {super.key, required this.typeTransaction, required this.product});
+  const BarcodeScannerResult({
+    super.key,
+    required this.typeTransaction,
+    required this.product,
+  });
 
-  final Product product;
+  final Product? product;
   final String typeTransaction;
 
   @override
@@ -22,7 +25,7 @@ class _BarcodeScannerResultState extends State<BarcodeScannerResult>
     with AccessTokenProvider {
   List<Product> listProduct = [];
   Map<int, Map<String, dynamic>> groupedProducts = {};
-  var domain = dotenv.env["BASE_URL"];
+  final String domain = dotenv.env["BASE_URL"] ?? '';
 
   int subTotal = 0;
   bool _isLoading = false;
@@ -30,42 +33,46 @@ class _BarcodeScannerResultState extends State<BarcodeScannerResult>
   @override
   void initState() {
     super.initState();
+    if (widget.product != null) {
+      listProduct.add(widget.product!);
+    }
+    _updateSubTotal();
+  }
 
-    setState(() {
-      listProduct.add(widget.product);
-    });
+  void _updateSubTotal() {
+    subTotal = listProduct.fold(0, (sum, item) => sum + item.price.toInt());
   }
 
   void updateProductCount(Product product, int count) {
     setState(() {
       listProduct.removeWhere((element) => element.id == product.id);
       for (int i = 0; i < count; i++) {
-        listProduct.add(
-          Product.set(
-            purchasePrice: product.purchasePrice,
-            barcode: product.barcode,
-            uuid: product.uuid,
-            image: "$domain/api/products/images/${product.uuid}",
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            remaining: product.stock,
-            selected: 1,
-          ),
-        );
+        listProduct.add(Product.set(
+          purchasePrice: product.purchasePrice,
+          barcode: product.barcode,
+          uuid: product.uuid,
+          image: "$domain/api/products/images/${product.uuid}",
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          remaining: product.stock,
+          selected: 1,
+        ));
       }
-      subTotal = listProduct.fold(0, (sum, item) => sum + item.price.toInt());
+      _updateSubTotal();
     });
   }
 
   Map<int, Map<String, dynamic>> groupedListTransactions(
       List<Product> transactions) {
+    groupedProducts.clear();
     for (var product in transactions) {
       int id = product.id;
-      if (groupedProducts.containsKey(id)) {
-        groupedProducts[id]!['count']++;
-      } else {
-        groupedProducts[id] = {
+      groupedProducts.update(
+        id,
+        (existingProduct) =>
+            {...existingProduct, 'count': existingProduct['count'] + 1},
+        ifAbsent: () => {
           'id': product.id,
           'uuid': product.uuid,
           'barcode': product.barcode,
@@ -75,117 +82,102 @@ class _BarcodeScannerResultState extends State<BarcodeScannerResult>
           'count': 1,
           'remaining': product.remaining,
           'image': product.image
-        };
-      }
+        },
+      );
     }
-
     return groupedProducts;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    print("widget.listProduct: $groupedProducts");
-    print("widget.subTotalPrice: $subTotal");
-    return Scaffold(
-      appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
-        backgroundColor: const Color(0xff076A68),
-        title: Text(
-          widget.typeTransaction,
-          style: const TextStyle(color: Colors.white),
-        ),
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              // top menu
-              children: [
-                Container(
-                  decoration: const BoxDecoration(
-                      color: Colors.white,
-                      border: Border(
-                          bottom:
-                              BorderSide(width: 1, color: Color(0xffDDDDDD)))),
-                  padding: const EdgeInsets.only(bottom: 10, top: 10),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      const Spacer(),
-                      Container(
-                          margin: const EdgeInsets.only(right: 10),
-                          child: GestureDetector(
-                            onTap: () => handleBarcodeScan(context),
-                            child: const Icon(Icons.qr_code_scanner_outlined),
-                          )),
-                    ],
-                  ),
-                ),
-                BarcodeScannerResultItem(
-                  listProduct: groupedListTransactions(listProduct),
-                  typeTransaction: widget.typeTransaction,
-                  subTotalPrice: subTotal,
-                )
-              ],
-            ),
-    );
-  }
-
-  handleBarcodeScan(BuildContext context) async {
+  Future<void> handleBarcodeScan(BuildContext context) async {
     try {
-      if (mounted) {
-        setState(() {
-          _isLoading = true;
-        });
-      }
+      setState(() => _isLoading = true);
 
-      var barcodeResult = await BarcodeCamera().scanner();
+      final barcodeResult = await BarcodeCamera().scanner();
 
       if (barcodeResult == '-1') {
         if (context.mounted) {
-          Navigator.pushReplacementNamed(context, '/barcode-scanner-result',
-              arguments: {'typeTransaction': widget.typeTransaction});
-          return;
+          Navigator.pop(context);
         }
+        return;
       }
 
       if (!mounted) return;
 
-      // searchBarController.text = barcodeResult;
-      Product result = await getProductByBarcode(barcodeResult);
-      if (context.mounted) {
+      final result = await getProductByBarcode(barcodeResult);
+      setState(() {
         listProduct.add(result);
-      }
+        _updateSubTotal();
+      });
     } on PlatformException catch (e) {
-      // Handle error
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content:
-                  Text('Izin kamera tidak diizinkan oleh si pengguna: $e')),
-        );
-      }
+      _showSnackBar('Izin kamera tidak diizinkan oleh pengguna: $e');
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
-      }
+      _showSnackBar('Error: ${e.toString()}');
     } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void _showSnackBar(String message) {
+    if (mounted) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(message)));
     }
   }
 
   Future<Product> getProductByBarcode(String barcode) async {
     try {
-      var product = await GetProductByBarcode.getProduct(barcode);
+      final product = await GetProductByBarcode.getProduct(barcode);
       return product.data!;
     } catch (e) {
       throw Exception(e.toString());
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: const Color(0xff076A68),
+        title: Text(widget.typeTransaction,
+            style: const TextStyle(color: Colors.white)),
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildTopMenu(),
+                  BarcodeScannerResultItem(
+                    listProduct: groupedListTransactions(listProduct),
+                    typeTransaction: widget.typeTransaction,
+                    subTotalPrice: subTotal,
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
+
+  Widget _buildTopMenu() {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(bottom: BorderSide(width: 1, color: Color(0xffDDDDDD))),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          GestureDetector(
+            onTap: () => handleBarcodeScan(context),
+            child: const Padding(
+              padding: EdgeInsets.only(right: 10),
+              child: Icon(Icons.qr_code_scanner_outlined),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
