@@ -6,8 +6,9 @@ class UpdateDialog {
   UpdateDialog({required this.dataProduct});
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String _typeChange = "";
+  // ignore: prefer_typing_uninitialized_variables
   final dataProduct;
-  bool _isLoading = false;
+  final bool _isLoading = false;
 
   Future updateProduct(
       {required String uuid,
@@ -360,8 +361,10 @@ class UpdateDialog {
                                               ),
                                             );
                                           }
-                                          Navigator.pop(context);
-                                          setState(() {});
+                                          if (context.mounted) {
+                                            Navigator.pop(context);
+                                            setState(() {});
+                                          }
                                         }
                                       },
                                       child: const Text(

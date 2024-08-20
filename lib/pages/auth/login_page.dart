@@ -31,12 +31,9 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _login(BuildContext context, String email, String password) async {
+    _isLoading = true;
     try {
-      debugPrint("email: $email");
-      debugPrint("password: $password");
       ApiResponse<LoginResult> response = await Auth.login(email, password);
-      debugPrint("result: ${response.message}");
-
       if (response != null) {
         if (response.status == false) {
           const snackBar = SnackBar(
@@ -45,9 +42,10 @@ class _LoginPageState extends State<LoginPage> {
             backgroundColor: Colors.red,
           );
 
-          // ignore: use_build_context_synchronously
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          return;
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            return;
+          }
         } else {
           SharedPreferences pref = await SharedPreferences.getInstance();
           pref.setString("UserEmail", response.data!.user.email);
@@ -64,6 +62,8 @@ class _LoginPageState extends State<LoginPage> {
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("terjadi kesalahan")));
       debugPrint('$e $stacktrace');
+    } finally {
+      _isLoading = false;
     }
   }
 

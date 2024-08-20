@@ -11,9 +11,7 @@ import 'package:kasir_mobile/main.dart';
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import 'package:shared_preferences/shared_preferences.dart';
-
-class Auth {
+class Auth with AccessTokenProvider {
   bool status;
   String message;
   dynamic data;
@@ -22,8 +20,7 @@ class Auth {
   Auth({required this.status, required this.data, required this.message});
 
   static deletePrefer(BuildContext context) async {
-    var pref = await SharedPreferences.getInstance();
-    pref.remove("AccessToken");
+    AccessTokenProvider.remove();
     Navigator.pushReplacement(
         // ignore: use_build_context_synchronously
         context,
@@ -76,8 +73,7 @@ class Auth {
 
   static logout(BuildContext context) async {
     try {
-      var pref = await SharedPreferences.getInstance();
-      var token = pref.getString('AccessToken');
+      String? token = await AccessTokenProvider.token();
       var response = await http.post(Uri.parse('$domain/api/logout'), headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -96,7 +92,7 @@ class Auth {
 
   static authenticated() async {
     try {
-      var token = await AccessTokenProvider.token();
+      String? token = await AccessTokenProvider.token();
       final httpClient = HttpClient();
       httpClient.badCertificateCallback =
           ((X509Certificate cert, String host, int port) => true);

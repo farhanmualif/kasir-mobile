@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:kasir_mobile/helper/get_access_token.dart';
 import 'package:kasir_mobile/interface/api_response_interface.dart';
 import 'package:kasir_mobile/interface/product_update_response_interface.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class UpdateProduct {
+class UpdateProduct with AccessTokenProvider {
   static Future<ApiResponse<ProductUpdateResponse>> put(
     String uuid,
     String name,
@@ -17,8 +17,7 @@ class UpdateProduct {
     String addOrreduceStock,
   ) async {
     try {
-      var pref = await SharedPreferences.getInstance();
-      var token = pref.getString('AccessToken');
+      String? token = await AccessTokenProvider.token();
       var domain = dotenv.env["BASE_URL"]!;
 
       var body = {
@@ -46,8 +45,7 @@ class UpdateProduct {
           });
 
       final resBody = jsonDecode(response.body);
-      print("req.body: ${json.encode(body)}");
-      print("response.body: ${response.body}");
+
       return ApiResponse.fromJson(
         resBody,
         (json) => json is Map<String, dynamic>

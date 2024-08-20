@@ -222,38 +222,40 @@ class _StokProductManagementState extends State<StokProductManagement> {
                                                                 });
                                                                 if (!response
                                                                     .status) {
-                                                                  ScaffoldMessenger.of(
-                                                                          context)
-                                                                      .showSnackBar(
-                                                                    const SnackBar(
-                                                                      duration: Duration(
-                                                                          seconds:
-                                                                              1),
-                                                                      content: Text(
-                                                                          'terjadi kesalahan'),
-                                                                      backgroundColor:
-                                                                          Colors
-                                                                              .red,
-                                                                    ),
-                                                                  );
+                                                                  if (context
+                                                                      .mounted) {
+                                                                    ScaffoldMessenger.of(
+                                                                            context)
+                                                                        .showSnackBar(
+                                                                      const SnackBar(
+                                                                        duration:
+                                                                            Duration(seconds: 1),
+                                                                        content:
+                                                                            Text('terjadi kesalahan'),
+                                                                        backgroundColor:
+                                                                            Colors.red,
+                                                                      ),
+                                                                    );
+                                                                  }
                                                                 } else {
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop();
-                                                                  ScaffoldMessenger.of(
-                                                                          context)
-                                                                      .showSnackBar(
-                                                                    const SnackBar(
-                                                                      duration: Duration(
-                                                                          seconds:
-                                                                              1),
-                                                                      content: Text(
-                                                                          'berhasil menghapus data'),
-                                                                      backgroundColor:
-                                                                          Colors
-                                                                              .green,
-                                                                    ),
-                                                                  );
+                                                                  if (context
+                                                                      .mounted) {
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                    ScaffoldMessenger.of(
+                                                                            context)
+                                                                        .showSnackBar(
+                                                                      const SnackBar(
+                                                                        duration:
+                                                                            Duration(seconds: 1),
+                                                                        content:
+                                                                            Text('berhasil menghapus data'),
+                                                                        backgroundColor:
+                                                                            Colors.green,
+                                                                      ),
+                                                                    );
+                                                                  }
                                                                 }
                                                               },
                                                               child: const Text(

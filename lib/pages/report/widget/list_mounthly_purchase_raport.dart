@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:kasir_mobile/helper/format_cuurency.dart';
 import 'package:kasir_mobile/pages/report/daily_report.dart';
 import 'package:kasir_mobile/provider/get_monthly_purchase_provider.dart';
 
@@ -21,22 +22,22 @@ class _ListMounthlyPurchaseReport extends State<ListMounthlyPurchaseReport> {
       future: GetMonthlyPurchase.getMonthlyTransaction(widget.date),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasData == false) {
-            return const Center(
-              child: Text('Data Belum Tersedia'),
-            );
-          } else if (snapshot.data == null || snapshot.data!.data == null) {
-            return const Center(
-              child: Text('data belum tersedia'),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
-          }  else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (snapshot.hasData == false) {
+          return const Center(
+            child: Text('Data Belum Tersedia'),
+          );
+        } else if (snapshot.data == null || snapshot.data!.data == null) {
+          return const Center(
+            child: Text('data belum tersedia'),
+          );
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text('Error: ${snapshot.error}'),
+          );
+        } else {
           return CustomScrollView(
             slivers: [
               SliverList(
@@ -95,7 +96,8 @@ class _ListMounthlyPurchaseReport extends State<ListMounthlyPurchaseReport> {
                                             fontWeight: FontWeight.w700),
                                       ),
                                       Text(
-                                        "Rp. ${snapshot.data!.data!.totalExpenditure}",
+                                        convertToIdr(snapshot
+                                            .data!.data!.totalExpenditure),
                                         style: const TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.w700),
@@ -210,7 +212,8 @@ class _ListMounthlyPurchaseReport extends State<ListMounthlyPurchaseReport> {
                                             child: const Text("Pengeluaran"),
                                           ),
                                           Text(
-                                            "Rp. ${snapshot.data!.data!.dailyData[index].totalExpenditure}",
+                                            convertToIdr(snapshot.data!.data!
+                                                .dailyData[index].expenditure),
                                             style: const TextStyle(
                                                 fontWeight: FontWeight.bold),
                                           ),

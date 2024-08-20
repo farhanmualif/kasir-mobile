@@ -1,21 +1,20 @@
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:kasir_mobile/helper/get_access_token.dart';
 import 'package:kasir_mobile/interface/api_response_interface.dart';
 import 'package:kasir_mobile/interface/raport/monthly_transactions.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class GetMonthlyTransaction {
+class GetMonthlyTransaction with AccessTokenProvider {
   static var domain = dotenv.env['BASE_URL'];
 
   static Future<ApiResponse<MonthlyTransaction>> getMonthlyTransaction(
       String date) async {
     try {
-      var pref = await SharedPreferences.getInstance();
-      var token = pref.getString('AccessToken');
+      String? token = await AccessTokenProvider.token();
       var response = await http.get(
-        Uri.http(domain!, 'api/mountly-transaction/$date'),
+        Uri.parse('$domain/api/sales/monthly/$date'),
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
@@ -26,11 +25,15 @@ class GetMonthlyTransaction {
       if (response.statusCode == 200) {
         final resBody = jsonDecode(response.body);
 
+        print("check resBody: $resBody");
+
         return ApiResponse.fromJson(
           resBody,
-          (json) => json is Map<String, dynamic>
-              ? MonthlyTransaction.fromJson(json)
-              : throw ArgumentError('Invalid JSON format'),
+          (json) {
+            return json is Map<String, dynamic>
+                ? MonthlyTransaction.fromJson(json)
+                : throw ArgumentError('Invalid JSON format');
+          },
         );
       } else {
         throw Exception('Failed to load data');

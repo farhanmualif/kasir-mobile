@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:kasir_mobile/helper/get_access_token.dart';
 import 'package:http/http.dart' as http;
 
-class PostProduct {
+class PostProduct with AccessTokenProvider{
   static String? domain = dotenv.env["BASE_URL"];
 
   static postProduct(
@@ -17,8 +17,7 @@ class PostProduct {
       int? categoryId,
       String? barcode}) async {
     try {
-      var pref = await SharedPreferences.getInstance();
-      var token = pref.getString('AccessToken');
+      String? token = await AccessTokenProvider.token();
 
       var request = http.MultipartRequest(
         'POST',

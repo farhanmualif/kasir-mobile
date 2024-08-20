@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:kasir_mobile/pages/struk.dart';
-
+import 'package:kasir_mobile/pages/struk/struk.dart';
+import 'package:kasir_mobile/themes/AppColors.dart';
 
 // ignore: must_be_immutable
 class PaymentDone extends StatelessWidget {
@@ -26,19 +26,12 @@ class PaymentDone extends StatelessWidget {
           margin: const EdgeInsets.all(10),
           decoration: const BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(5)),
-            color: Color(0xff076A68),
+            color: AppColors.primary,
           ),
           child: GestureDetector(
               onTap: () {
                 Navigator.pushReplacementNamed(context, '/transaction',
                     arguments: {'typeTransaction': typeTransaction});
-                // Navigator.of(context).pushReplacement(
-                //   MaterialPageRoute(
-                //     builder: (context) => Transaction(
-                //       typeTransaction: typeTransaction,
-                //     ),
-                //   ),
-                // );
               },
               child: const Icon(
                 Icons.done,
@@ -92,12 +85,11 @@ class PaymentDone extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xffFFCA45)),
                     onPressed: () {
-                      String url =
-                          "http://$domain/storage/invoices/invoice_$noTransaction.pdf";
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => Struk(url: url),
+                          builder: (context) =>
+                              Struk(noTransaction: noTransaction),
                         ),
                       );
                     },

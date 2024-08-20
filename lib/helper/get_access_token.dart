@@ -10,4 +10,9 @@ mixin AccessTokenProvider {
     SharedPreferences pref = await SharedPreferences.getInstance();
     return pref.getString("AccessToken");
   }
+
+  static Future<void> remove() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.remove("AccessToken");
+  }
 }

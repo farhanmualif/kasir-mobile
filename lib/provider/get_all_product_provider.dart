@@ -1,15 +1,17 @@
 import 'dart:convert';
-
-import 'package:kasir_mobile/helper/get_access_token.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:kasir_mobile/interface/category_interface.dart';
 import 'package:kasir_mobile/interface/product_interface.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:kasir_mobile/helper/get_access_token.dart';
 
 class GetAllProduct with AccessTokenProvider {
   bool status;
   String message;
   List<Product> data;
+  static const String cacheKey = 'all_products_cache';
 
   GetAllProduct({
     required this.status,
@@ -63,9 +65,21 @@ class GetAllProduct with AccessTokenProvider {
 
   static Future<GetAllProduct> getAllProduct() async {
     try {
-      var domain = dotenv.env["BASE_URL"];
+      // Try to get data from cache
+      var getCache = await DefaultCacheManager().getFileFromCache(cacheKey);
 
+      if (getCache != null) {
+        final cachedData = await getCache.file.readAsString();
+        final body = json.decode(cachedData);
+        debugPrint("Data found in cache");
+
+        return GetAllProduct.fromJson(body);
+      }
+
+      // If no cache or cache expired, fetch from API
+      var domain = dotenv.env["BASE_URL"];
       String? token = await AccessTokenProvider.token();
+      debugPrint("Data not in cache, fetching from API");
 
       var response =
           await http.get(Uri.parse("$domain/api/products"), headers: {
@@ -75,9 +89,23 @@ class GetAllProduct with AccessTokenProvider {
       });
 
       final body = json.decode(response.body);
+      debugPrint("fetch data successfully: $body");
+
+      // Save the new data to cache
+      await DefaultCacheManager().putFile(
+        cacheKey,
+        utf8.encode(response.body),
+        maxAge: const Duration(days: 1),
+        fileExtension: 'json',
+      );
+
       return GetAllProduct.fromJson(body);
     } catch (e, stacktrace) {
       throw Exception('line: $stacktrace: $e');
     }
+  }
+
+  static Future<void> clearCache() async {
+    await DefaultCacheManager().removeFile(cacheKey);
   }
 }

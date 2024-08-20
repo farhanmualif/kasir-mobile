@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kasir_mobile/components/barcode_camera.dart';
 import 'package:kasir_mobile/interface/category_interface.dart';
+import 'package:kasir_mobile/provider/get_all_product_provider.dart';
 import 'package:kasir_mobile/provider/get_category_provider.dart';
 import 'package:kasir_mobile/provider/post_product_provider.dart';
 import 'package:kasir_mobile/themes/AppColors.dart';
@@ -79,18 +80,10 @@ class _FormAddProductState extends State<FormAddProduct> {
           stock: int.parse(_stockController.text));
 
       if (post['status'] == true) {
-        Navigator.pushReplacementNamed(context, '/payment-done',
-            arguments: {'typeTransaction': 'Pembelian Barang', 'change': 0});
-        // Navigator.pushReplacement(
-        //     // ignore: use_build_context_synchronously
-        //     context,
-        //     MaterialPageRoute(
-        //         builder: (context) => PaymentDone(
-        //               change: 0,
-        //               typeTransaction: "Pembelian Barang",
-        //             )));
-        // Navigator.of(context)
-        //     .push(MaterialPageRoute(builder: (context) => const Struk()));
+        if (context.mounted) {
+          Navigator.pushReplacementNamed(context, '/payment-done',
+              arguments: {'typeTransaction': 'Pembelian Barang', 'change': 0});
+        }
       } else {
         final snackBar = SnackBar(
           duration: const Duration(seconds: 5),
@@ -114,6 +107,7 @@ class _FormAddProductState extends State<FormAddProduct> {
     } finally {
       if (mounted) {
         setState(() {
+          GetAllProduct.clearCache();
           _isLoading = false;
         });
       }

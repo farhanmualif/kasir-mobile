@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kasir_mobile/helper/format_cuurency.dart';
 import 'package:kasir_mobile/interface/api_response_interface.dart';
 import 'package:kasir_mobile/interface/raport/monthly_transactions.dart';
 import 'package:kasir_mobile/pages/report/daily_report.dart';
@@ -24,22 +25,22 @@ class _ListMounthlyTransactionRaportState
       future: GetMonthlyTransaction.getMonthlyTransaction(widget.date),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasData == false) {
-            return const Center(
-              child: Text('Data Belum Tersedia'),
-            );
-          } else if (snapshot.data == null || snapshot.data!.data == null) {
-            return const Center(
-              child: Text('data belum tersedia'),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
-          }  else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (snapshot.hasData == false) {
+          return const Center(
+            child: Text('Data Belum Tersedia'),
+          );
+        } else if (snapshot.data == null || snapshot.data!.data == null) {
+          return const Center(
+            child: Text('data belum tersedia'),
+          );
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text('Error: ${snapshot.error}'),
+          );
+        } else {
           if (snapshot.hasData) {
             return CustomScrollView(
               slivers: [
@@ -99,7 +100,8 @@ class _ListMounthlyTransactionRaportState
                                               fontWeight: FontWeight.w700),
                                         ),
                                         Text(
-                                          'Rp. ${snapshot.data?.data?.totalProfit}',
+                                          convertToIdr(
+                                              snapshot.data?.data?.totalProfit),
                                           style: const TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.w700),
@@ -130,7 +132,8 @@ class _ListMounthlyTransactionRaportState
                                               fontWeight: FontWeight.w700),
                                         ),
                                         Text(
-                                          'Rp. ${snapshot.data?.data?.totalRevenue}',
+                                          convertToIdr(
+                                              snapshot.data?.data?.totalIncome),
                                           style: const TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.w700),
@@ -202,12 +205,14 @@ class _ListMounthlyTransactionRaportState
                                                   child: Column(
                                                     children: [
                                                       Text(
-                                                        "${snapshot.data!.data!.year}",
+                                                        snapshot
+                                                            .data!.data!.month,
                                                         style: const TextStyle(
                                                             fontSize: 10),
                                                       ),
                                                       Text(
-                                                        "${snapshot.data!.data!.year}",
+                                                        snapshot
+                                                            .data!.data!.year,
                                                         style: const TextStyle(
                                                             fontSize: 10),
                                                       ),
@@ -247,7 +252,12 @@ class _ListMounthlyTransactionRaportState
                                                         "Pendapatan"),
                                                   ),
                                                   Text(
-                                                    "Rp. ${snapshot.data!.data!.detailTransactions[index].profit}",
+                                                    convertToIdr(snapshot
+                                                        .data!
+                                                        .data!
+                                                        .detailTransactions[
+                                                            index]
+                                                        .income),
                                                     style: const TextStyle(
                                                         fontWeight:
                                                             FontWeight.bold),
@@ -270,7 +280,12 @@ class _ListMounthlyTransactionRaportState
                                                         "Keuntungan"),
                                                   ),
                                                   Text(
-                                                    "Rp. ${snapshot.data!.data!.detailTransactions[index].revenue}",
+                                                    convertToIdr(snapshot
+                                                        .data!
+                                                        .data!
+                                                        .detailTransactions[
+                                                            index]
+                                                        .profit),
                                                     style: const TextStyle(
                                                         fontWeight:
                                                             FontWeight.bold),
@@ -339,16 +354,16 @@ class _ListMounthlyTransactionRaportState
                             ),
                           )
                         : const Center(
-                          child: Text("Data belum tersedia"),
-                        ),
+                            child: Text("Data belum tersedia"),
+                          ),
                   ]),
                 ),
               ],
             );
           } else {
             return const Center(
-                          child: Text("Data belum tersedia"),
-                        );
+              child: Text("Data belum tersedia"),
+            );
           }
         }
       },

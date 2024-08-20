@@ -1,12 +1,12 @@
 class MounthlyPurchase {
   final String link;
-  final int totalTransaction;
+  final int totalPurchases;
   final int totalExpenditure;
   final List<DetailMounthlyPurchase> dailyData;
 
   MounthlyPurchase({
     required this.link,
-    required this.totalTransaction,
+    required this.totalPurchases,
     required this.totalExpenditure,
     required this.dailyData,
   });
@@ -14,7 +14,7 @@ class MounthlyPurchase {
   factory MounthlyPurchase.fromJson(Map<String, dynamic> json) {
     return MounthlyPurchase(
       link: json['link'],
-      totalTransaction: json['total_transaction'],
+      totalPurchases: json['total_purchases'],
       totalExpenditure: json['total_expenditure'],
       dailyData: List<DetailMounthlyPurchase>.from(
         json['daily_data'].map(
@@ -30,7 +30,7 @@ class DetailMounthlyPurchase {
   final String date;
   final int month;
   final String monthName;
-  final double totalExpenditure;
+  final int expenditure;
   final String link;
 
   DetailMounthlyPurchase({
@@ -38,7 +38,7 @@ class DetailMounthlyPurchase {
     required this.date,
     required this.month,
     required this.monthName,
-    required this.totalExpenditure,
+    required this.expenditure,
     required this.link,
   });
 
@@ -48,7 +48,7 @@ class DetailMounthlyPurchase {
       date: json['date'],
       month: json['month'],
       monthName: json['month_name'],
-      totalExpenditure: double.parse(json['total_expenditure']),
+      expenditure: json['expenditure'],
       link: json['link'],
     );
   }

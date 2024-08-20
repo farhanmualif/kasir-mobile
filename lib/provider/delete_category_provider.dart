@@ -1,20 +1,19 @@
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:kasir_mobile/helper/get_access_token.dart';
 import 'package:kasir_mobile/interface/api_response_interface.dart';
 import 'package:kasir_mobile/interface/category_interface.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class DeleteCategory {
+class DeleteCategory with AccessTokenProvider {
   static Future<ApiResponse<CategoryProduct>> delete(String uuid) async {
     try {
-      var pref = await SharedPreferences.getInstance();
-      var token = pref.getString('AccessToken');
       var domain = dotenv.env["BASE_URL"]!;
+      String? token = await AccessTokenProvider.token();
 
       var response =
-          await http.delete(Uri.http(domain, "api/category/$uuid"), headers: {
+          await http.delete(Uri.parse("$domain/api/category/$uuid"), headers: {
         "Content-Type": "application/json",
         "Accept": "application/json",
         'Authorization': 'Bearer $token'

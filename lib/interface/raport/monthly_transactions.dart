@@ -1,17 +1,17 @@
 class MonthlyTransaction {
   final String link;
   final int totalTransactions;
-  final int totalRevenue;
+  final int totalIncome;
   final int totalProfit;
   final String month;
-  final int monthNumber;
-  final int year;
+  final String monthNumber;
+  final String year;
   final List<DetailMonthlyTransaction> detailTransactions;
 
   MonthlyTransaction({
     required this.link,
     required this.totalTransactions,
-    required this.totalRevenue,
+    required this.totalIncome,
     required this.totalProfit,
     required this.month,
     required this.monthNumber,
@@ -23,7 +23,7 @@ class MonthlyTransaction {
     return MonthlyTransaction(
       link: json['link'],
       totalTransactions: json['total_transactions'],
-      totalRevenue: json['total_revenue'],
+      totalIncome: json['total_income'],
       totalProfit: json['total_profit'],
       month: json['month'],
       monthNumber: json['month_number'],
@@ -40,14 +40,14 @@ class MonthlyTransaction {
 class DetailMonthlyTransaction {
   final String link;
   final String date;
-  final double revenue;
+  final double income;
   final double profit;
   final int transactionAmount;
 
   DetailMonthlyTransaction({
     required this.link,
     required this.date,
-    required this.revenue,
+    required this.income,
     required this.profit,
     required this.transactionAmount,
   });
@@ -56,8 +56,8 @@ class DetailMonthlyTransaction {
     return DetailMonthlyTransaction(
       link: json['link'],
       date: json['date'],
-      revenue: double.parse(json['revenue']),
-      profit: double.parse(json['profit']),
+      income: json['income'].toDouble(),
+      profit: json['profit'].toDouble(),
       transactionAmount: json['transaction_amount'],
     );
   }

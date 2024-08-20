@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kasir_mobile/helper/format_cuurency.dart';
 import 'package:kasir_mobile/pages/report/monthly_report.dart';
 import 'package:kasir_mobile/provider/get_year_purhase_provider.dart';
 
@@ -143,7 +144,11 @@ class _ListAnualPurchaseReportState extends State<ListAnualPurchaseReport> {
                                     Row(
                                       children: [
                                         Text(
-                                          "${snapshot.data!.data!.detailYearPurchase[index].year}",
+                                          snapshot
+                                              .data!
+                                              .data!
+                                              .detailYearPurchase[index]
+                                              .monthName,
                                           style: const TextStyle(
                                               fontSize: 30,
                                               fontWeight: FontWeight.bold),
@@ -182,7 +187,11 @@ class _ListAnualPurchaseReportState extends State<ListAnualPurchaseReport> {
                                             child: const Text("Pengeluaran"),
                                           ),
                                           Text(
-                                            "Rp. ${snapshot.data!.data!.detailYearPurchase[index].totalExpenditure}",
+                                            convertToIdr(snapshot
+                                                .data!
+                                                .data!
+                                                .detailYearPurchase[index]
+                                                .totalExpenditure),
                                             style: const TextStyle(
                                                 fontWeight: FontWeight.bold),
                                           ),

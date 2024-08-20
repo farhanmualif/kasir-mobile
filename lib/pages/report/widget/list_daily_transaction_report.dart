@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:kasir_mobile/pages/struk.dart';
+import 'package:kasir_mobile/helper/format_cuurency.dart';
+import 'package:kasir_mobile/pages/struk/struk.dart';
 import 'package:kasir_mobile/provider/get_daily_transaction_provider.dart';
 
 class ListDailyTransactionReport extends StatefulWidget {
@@ -15,30 +15,29 @@ class ListDailyTransactionReport extends StatefulWidget {
 
 class _ListDailyTransactionReportState
     extends State<ListDailyTransactionReport> {
-  var domain = dotenv.env['BASE_URL'];
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: GetDailyTransaction.getdailyTransaction(widget.date),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasData == false) {
-            return const Center(
-              child: Text('Data Belum Tersedia'),
-            );
-          } else if (snapshot.data == null || snapshot.data!.dailyTransaction == null) {
-            return const Center(
-              child: Text('data belum tersedia'),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
-          } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (snapshot.hasData == false) {
+          return const Center(
+            child: Text('Tidak ada data'),
+          );
+        } else if (snapshot.data == null ||
+            snapshot.data!.dailyTransaction == null) {
+          return const Center(
+            child: Text('Data Belum Tersedia'),
+          );
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text('Error: ${snapshot.error}'),
+          );
+        } else {
           if (snapshot.data?.dailyTransaction?.detailTransaction != null) {
             return CustomScrollView(
               slivers: [
@@ -98,7 +97,10 @@ class _ListDailyTransactionReportState
                                                 fontWeight: FontWeight.w700),
                                           ),
                                           Text(
-                                            "Rp. ${snapshot.data?.dailyTransaction?.totalRevenue}",
+                                            convertToIdr(snapshot
+                                                .data
+                                                ?.dailyTransaction
+                                                ?.totalRevenue),
                                             style: const TextStyle(
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.w700),
@@ -128,7 +130,8 @@ class _ListDailyTransactionReportState
                                               fontWeight: FontWeight.w700),
                                         ),
                                         Text(
-                                          "Rp. ${snapshot.data?.dailyTransaction?.totalProfit}",
+                                          convertToIdr(snapshot.data
+                                              ?.dailyTransaction?.totalProfit),
                                           style: const TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.w700),
@@ -228,7 +231,11 @@ class _ListDailyTransactionReportState
                                             child: const Text("Pendapatan"),
                                           ),
                                           Text(
-                                            "Rp. ${snapshot.data!.dailyTransaction!.detailTransaction[index].revenue}",
+                                            convertToIdr(snapshot
+                                                .data!
+                                                .dailyTransaction!
+                                                .detailTransaction[index]
+                                                .revenue),
                                             style: const TextStyle(
                                                 fontWeight: FontWeight.bold),
                                           ),
@@ -247,7 +254,11 @@ class _ListDailyTransactionReportState
                                             child: const Text("Keuntungan"),
                                           ),
                                           Text(
-                                            "Rp. ${snapshot.data!.dailyTransaction!.detailTransaction[index].profit}",
+                                            convertToIdr(snapshot
+                                                .data!
+                                                .dailyTransaction!
+                                                .detailTransaction[index]
+                                                .profit),
                                             style: const TextStyle(
                                                 fontWeight: FontWeight.bold),
                                           ),
@@ -281,9 +292,9 @@ class _ListDailyTransactionReportState
                                                   .dailyTransaction!
                                                   .detailTransaction[index]
                                                   .noTransaction;
-                                              String url =
-                                                  "http://$domain/storage/invoices/invoice_$noTransaction.pdf";
-                                              return Struk(url: url);
+
+                                              return Struk(
+                                                  noTransaction: noTransaction);
                                             },
                                           ),
                                         );

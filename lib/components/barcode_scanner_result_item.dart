@@ -7,6 +7,7 @@ import 'package:kasir_mobile/helper/show_snack_bar.dart';
 import 'package:kasir_mobile/interface/product_interface.dart';
 import 'package:kasir_mobile/provider/update_product_provider.dart';
 
+// ignore: must_be_immutable
 class BarcodeScannerResultItem extends StatefulWidget {
   final Map<int, Map<String, dynamic>> listProduct;
   final String typeTransaction;

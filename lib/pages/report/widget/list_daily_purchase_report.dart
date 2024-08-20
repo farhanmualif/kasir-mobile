@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kasir_mobile/helper/format_cuurency.dart';
 import 'package:kasir_mobile/provider/get_daily_purchase_provider.dart';
 
 class ListDailyPurchaseReport extends StatefulWidget {
@@ -26,7 +27,11 @@ class _ListDailyPurchaseReportState extends State<ListDailyPurchaseReport> {
             );
           } else if (snapshot.data == null || snapshot.data!.data == null) {
             return const Center(
-              child: Text('data belum tersedia'),
+              child: Text('Data Belum Tersedia'),
+            );
+          } else if (!snapshot.data!.status) {
+            return Center(
+              child: Text(snapshot.data!.message),
             );
           } else if (snapshot.hasError) {
             return Center(
@@ -91,7 +96,8 @@ class _ListDailyPurchaseReportState extends State<ListDailyPurchaseReport> {
                                                 fontWeight: FontWeight.w700),
                                           ),
                                           Text(
-                                            "Rp. ${snapshot.data!.data!.totalExpenditure}",
+                                            convertToIdr(snapshot
+                                                .data!.data!.totalExpenditure),
                                             style: const TextStyle(
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.w700),
@@ -191,7 +197,11 @@ class _ListDailyPurchaseReportState extends State<ListDailyPurchaseReport> {
                                             child: const Text("Pengeluaran"),
                                           ),
                                           Text(
-                                            "Rp. ${snapshot.data!.data!.itemsPurchasing[index].purchases}",
+                                            convertToIdr(snapshot
+                                                .data!
+                                                .data!
+                                                .itemsPurchasing[index]
+                                                .purchases),
                                             style: const TextStyle(
                                                 fontWeight: FontWeight.bold),
                                           ),

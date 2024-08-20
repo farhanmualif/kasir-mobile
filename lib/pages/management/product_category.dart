@@ -170,33 +170,39 @@ class _ProductCategoryState extends State<ProductCategory> {
                                                         if (response[
                                                                 "status"] ==
                                                             false) {
-                                                          ScaffoldMessenger.of(
-                                                                  context)
-                                                              .showSnackBar(
-                                                                  SnackBar(
-                                                            duration:
-                                                                const Duration(
-                                                                    seconds: 5),
-                                                            content: Text(
-                                                                response[
-                                                                    'message']),
-                                                            backgroundColor:
-                                                                Colors.red,
-                                                          ));
+                                                          if (context.mounted) {
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(
+                                                                    SnackBar(
+                                                              duration:
+                                                                  const Duration(
+                                                                      seconds:
+                                                                          5),
+                                                              content: Text(
+                                                                  response[
+                                                                      'message']),
+                                                              backgroundColor:
+                                                                  Colors.red,
+                                                            ));
+                                                          }
                                                         } else {
-                                                          ScaffoldMessenger.of(
-                                                                  context)
-                                                              .showSnackBar(
-                                                                  SnackBar(
-                                                            duration:
-                                                                const Duration(
-                                                                    seconds: 5),
-                                                            content: Text(
-                                                                response[
-                                                                    'message']),
-                                                            backgroundColor:
-                                                                Colors.green,
-                                                          ));
+                                                          if (context.mounted) {
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(
+                                                                    SnackBar(
+                                                              duration:
+                                                                  const Duration(
+                                                                      seconds:
+                                                                          5),
+                                                              content: Text(
+                                                                  response[
+                                                                      'message']),
+                                                              backgroundColor:
+                                                                  Colors.green,
+                                                            ));
+                                                          }
                                                         }
                                                       } catch (e) {
                                                         rethrow;
@@ -204,8 +210,10 @@ class _ProductCategoryState extends State<ProductCategory> {
                                                       setState(() {
                                                         _isLoading = false;
                                                       });
-                                                      Navigator.of(context)
-                                                          .pop();
+                                                      if (context.mounted) {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      }
                                                     },
                                                   ),
                                                 ],

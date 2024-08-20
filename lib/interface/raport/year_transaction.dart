@@ -1,7 +1,7 @@
 class YearTransaction {
   final String link;
   final int totalTransactions;
-  final int totalRevenue;
+  final int totalIncome;
   final int totalProfit;
   final int year;
   final List<DetailYearTransaction> transactions;
@@ -9,7 +9,7 @@ class YearTransaction {
   YearTransaction({
     required this.link,
     required this.totalTransactions,
-    required this.totalRevenue,
+    required this.totalIncome,
     required this.totalProfit,
     required this.year,
     required this.transactions,
@@ -19,7 +19,7 @@ class YearTransaction {
     return YearTransaction(
       link: json['link'],
       totalTransactions: json['total_transactions'],
-      totalRevenue: json['total_revenue'],
+      totalIncome: json['total_income'],
       totalProfit: json['total_profit'],
       year: json['year'],
       transactions: (json['transactions'] as List)
@@ -33,14 +33,14 @@ class YearTransaction {
 class DetailYearTransaction {
   final String link;
   final String date;
-  final String revenue;
-  final String profit;
+  final int income;
+  final int profit;
   final int monthNum;
 
   DetailYearTransaction({
     required this.link,
     required this.date,
-    required this.revenue,
+    required this.income,
     required this.profit,
     required this.monthNum,
   });
@@ -49,8 +49,8 @@ class DetailYearTransaction {
     return DetailYearTransaction(
         link: json['link'],
         date: json['date'],
-        revenue: json['revenue'],
-        profit: json['profit'],
+        income: double.parse(json['income']).round(),
+        profit: double.parse(json['profit']).round(),
         monthNum: json['month_num']);
   }
 }

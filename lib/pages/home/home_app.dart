@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kasir_mobile/pages/home/home_body.dart';
 import 'package:kasir_mobile/provider/auth_provider.dart';
+import 'package:kasir_mobile/provider/get_all_product_provider.dart';
 
 class HomeApp extends StatefulWidget {
   const HomeApp({super.key});
@@ -72,6 +73,7 @@ class _HomeAppState extends State<HomeApp> {
                     onTap: () {
                       setState(() {
                         Auth.logout(context);
+                        GetAllProduct.clearCache();
                       });
                     },
                   ),

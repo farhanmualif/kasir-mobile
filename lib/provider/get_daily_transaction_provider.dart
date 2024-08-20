@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:kasir_mobile/helper/get_access_token.dart';
 import 'package:kasir_mobile/interface/raport/daily_transaction.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class GetDailyTransaction {
+class GetDailyTransaction with AccessTokenProvider {
   static var domain = dotenv.env['BASE_URL'];
   bool status;
   String message;
@@ -21,12 +21,12 @@ class GetDailyTransaction {
     List<DetailTransaction> listDetailTransactions = [];
     DailyTransaction dailyTransaction;
 
-    if (object['data'] != null) {
+    if (object['data'] != null && object['status'] == true) {
       for (var listDetailTransaction in object['data']['transactions']) {
         DetailTransaction detailTransaction = DetailTransaction(
             time: listDetailTransaction['time'],
-            revenue: listDetailTransaction['revenue'],
-            profit: listDetailTransaction['profit'],
+            revenue: int.parse(listDetailTransaction['revenue']),
+            profit: double.parse(listDetailTransaction['profit']),
             noTransaction: listDetailTransaction['no_transaction']);
 
         listDetailTransactions.add(detailTransaction);
@@ -52,10 +52,10 @@ class GetDailyTransaction {
 
   static Future<GetDailyTransaction> getdailyTransaction(String date) async {
     try {
-      var pref = await SharedPreferences.getInstance();
-      var token = pref.getString('AccessToken');
-      var response = await http
-          .get(Uri.http(domain!, 'api/daily-transaction/$date'), headers: {
+      String? token = await AccessTokenProvider.token();
+
+      var response =
+          await http.get(Uri.parse('$domain/api/sales/daily/$date'), headers: {
         "Content-Type": "application/json",
         "Accept": "application/json",
         'Authorization': 'Bearer $token'

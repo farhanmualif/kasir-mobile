@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:kasir_mobile/helper/get_access_token.dart';
 import 'package:kasir_mobile/interface/response_transaction_interface.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class RequestTransaction {
   int idProduct;
@@ -25,20 +25,13 @@ class RequestTransaction {
       'quantity': quantity,
     };
   }
-
-  @override
-  String toString() {
-    // TODO: implement toString
-    return super.toString();
-  }
 }
 
-class PostTransaction {
+class PostTransaction with AccessTokenProvider {
   static Future<TransactionResponse> post(
       double cash, List<RequestTransaction> items) async {
     try {
-      var pref = await SharedPreferences.getInstance();
-      var token = pref.getString('AccessToken');
+      String? token = await AccessTokenProvider.token();
       var domain = dotenv.env["BASE_URL"]!;
 
       var transaction = {
@@ -46,7 +39,7 @@ class PostTransaction {
         "items": items.map((item) => item.toJson()).toList()
       };
 
-      var response = await http.post(Uri.http(domain, "api/transaction"),
+      var response = await http.post(Uri.parse("$domain/api/transaction"),
           body: jsonEncode({"transaction": transaction}),
           headers: {
             "Content-Type": "application/json",

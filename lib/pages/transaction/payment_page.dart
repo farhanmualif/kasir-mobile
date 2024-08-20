@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kasir_mobile/helper/format_cuurency.dart';
 import 'package:kasir_mobile/interface/response_transaction_interface.dart';
 import 'package:kasir_mobile/provider/post_transaction_provider.dart';
+import 'package:kasir_mobile/themes/AppColors.dart';
 
 class PaymentPage extends StatefulWidget {
   const PaymentPage(
@@ -70,7 +71,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CircularProgressIndicator(),
+                    CircularProgressIndicator(color: AppColors.primary,),
                     SizedBox(height: 16.0),
                   ],
                 ),
@@ -83,7 +84,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   Navigator.pushNamed(context, "/payment-done", arguments: {
                     'change': change,
-                    'noTransaaction': result.data?.noTransaction,
+                    'noTransaction': result.data?.noTransaction,
                     'typeTransaction': "Transaksi"
                   });
                 });

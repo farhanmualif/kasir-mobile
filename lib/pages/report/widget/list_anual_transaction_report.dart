@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:kasir_mobile/helper/format_cuurency.dart';
 import 'package:kasir_mobile/pages/report/monthly_report.dart';
 import 'package:kasir_mobile/provider/get_year_transaction_provider.dart';
 
@@ -37,8 +38,8 @@ class _ListAnualTransactionReportState
           );
         } else if (snapshot.hasError) {
           return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
+            child: Text('Error: ${snapshot.error}'),
+          );
         } else {
           return CustomScrollView(
             slivers: [
@@ -98,7 +99,8 @@ class _ListAnualTransactionReportState
                                               fontWeight: FontWeight.w700),
                                         ),
                                         Text(
-                                          "Rp. ${snapshot.data!.data!.totalProfit}",
+                                          convertToIdr(
+                                              snapshot.data!.data!.totalProfit),
                                           style: const TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.w700),
@@ -128,7 +130,8 @@ class _ListAnualTransactionReportState
                                             fontWeight: FontWeight.w700),
                                       ),
                                       Text(
-                                        "Rp. ${snapshot.data!.data!.totalRevenue}",
+                                        convertToIdr(
+                                            snapshot.data!.data!.totalIncome),
                                         style: const TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.w700),
@@ -217,7 +220,8 @@ class _ListAnualTransactionReportState
                                             child: const Text("Pendapatan"),
                                           ),
                                           Text(
-                                            "Rp. ${snapshot.data!.data!.totalRevenue}",
+                                            convertToIdr(snapshot.data!.data!
+                                                .transactions[index].income),
                                             style: const TextStyle(
                                                 fontWeight: FontWeight.bold),
                                           ),
@@ -236,7 +240,8 @@ class _ListAnualTransactionReportState
                                             child: const Text("Keuntungan"),
                                           ),
                                           Text(
-                                            "Rp. ${snapshot.data!.data!.totalProfit}",
+                                            convertToIdr(snapshot.data!.data!
+                                                .transactions[index].profit),
                                             style: const TextStyle(
                                                 fontWeight: FontWeight.bold),
                                           ),

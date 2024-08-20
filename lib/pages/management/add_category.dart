@@ -5,6 +5,7 @@ class AddCategory extends StatefulWidget {
   const AddCategory({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _AddCategoryState createState() => _AddCategoryState();
 }
 
@@ -67,21 +68,25 @@ class _AddCategoryState extends State<AddCategory> {
                     final snackBarContext = context;
 
                     if (response["status"] == false) {
-                      ScaffoldMessenger.of(snackBarContext).showSnackBar(
-                        SnackBar(
-                          duration: const Duration(seconds: 5),
-                          content: Text(response['message']),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(snackBarContext).showSnackBar(
+                          SnackBar(
+                            duration: const Duration(seconds: 5),
+                            content: Text(response['message']),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
                     } else {
-                      ScaffoldMessenger.of(snackBarContext).showSnackBar(
-                        SnackBar(
-                          duration: const Duration(seconds: 5),
-                          content: Text(response['message']),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(snackBarContext).showSnackBar(
+                          SnackBar(
+                            duration: const Duration(seconds: 5),
+                            content: Text(response['message']),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      }
                     }
                   }
                 },

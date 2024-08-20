@@ -17,7 +17,7 @@ class YearPurchase {
       totalTransaction: json['total_transaction'],
       totalExpenditure: json['total_expendeture'],
       detailYearPurchase: List<DetailYearPurchase>.from(
-        json['monthly_data'].map(
+        json['monthly_purchases'].map(
           (data) => DetailYearPurchase.fromJson(data),
         ),
       ),
@@ -27,6 +27,7 @@ class YearPurchase {
 
 class DetailYearPurchase {
   final int month;
+  final String monthName;
   final int year;
   final int totalTransaction;
   final double totalExpenditure;
@@ -34,6 +35,7 @@ class DetailYearPurchase {
 
   DetailYearPurchase({
     required this.month,
+    required this.monthName,
     required this.year,
     required this.totalTransaction,
     required this.totalExpenditure,
@@ -43,6 +45,7 @@ class DetailYearPurchase {
   factory DetailYearPurchase.fromJson(Map<String, dynamic> json) {
     return DetailYearPurchase(
       month: json['month'],
+      monthName: json['month_name'],
       year: json['year'],
       totalTransaction: json['total_transaction'],
       totalExpenditure: double.parse(json['total_expendeture']),
