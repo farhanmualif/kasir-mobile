@@ -1,27 +1,33 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:kasir_mobile/helper/get_access_token.dart';
 import 'package:kasir_mobile/provider/update_product_provider.dart';
+import 'package:kasir_mobile/themes/AppColors.dart';
 
-class UpdateDialog {
-  UpdateDialog({required this.dataProduct});
+class UpdateDialog with AccessTokenProvider {
+  UpdateDialog({required this.dataProduct, required this.accessToken});
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String _typeChange = "";
   // ignore: prefer_typing_uninitialized_variables
   final dataProduct;
   final bool _isLoading = false;
+  String? accessToken;
 
-  Future updateProduct(
-      {required String uuid,
-      required String name,
-      required String barcode,
-      required int quantityStock,
-      required double sellingPrice,
-      required double purchasePrice,
-      required String addOrreduceStock}) async {
+  Future<bool> updateProduct({
+    required String uuid,
+    required String name,
+    required String barcode,
+    required int quantityStock,
+    required double sellingPrice,
+    required double purchasePrice,
+    required String addOrreduceStock,
+  }) async {
     try {
       var response = await UpdateProduct.put(uuid, name, barcode, quantityStock,
           sellingPrice, purchasePrice, addOrreduceStock);
-      return response;
+      return response.status;
     } catch (e) {
       rethrow;
     }
@@ -34,6 +40,7 @@ class UpdateDialog {
         TextEditingController(text: "");
     TextEditingController purchasePriceController =
         TextEditingController(text: dataProduct.purchasePrice.toString());
+
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     var domain = dotenv.env['BASE_URL'];
@@ -61,18 +68,47 @@ class UpdateDialog {
                             Row(
                               children: [
                                 Expanded(
-                                  flex: -1,
-                                  child: Container(
-                                    height: 40,
-                                    width: 40,
-                                    decoration: BoxDecoration(
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(50)),
-                                      image: DecorationImage(
-                                        image: NetworkImage(
-                                            "https://$domain/storage/images/${dataProduct.image}"),
+                                  child: CachedNetworkImage(
+                                    cacheManager: CacheManager(Config(
+                                        'imgCacheKey',
+                                        stalePeriod: const Duration(days: 1))),
+                                    imageUrl:
+                                        "$domain/storage/images/${dataProduct.image}",
+                                    httpHeaders: {
+                                      "Authorization": "Bearer $accessToken",
+                                      "Access-Control-Allow-Headers":
+                                          "Access-Control-Allow-Origin, Accept"
+                                    },
+                                    fit: BoxFit.cover,
+                                    placeholder: (context, url) => Container(
+                                      color: Colors.grey[300],
+                                      child: const Center(
+                                        child: CircularProgressIndicator(
+                                          color: AppColors.primary,
+                                        ),
                                       ),
                                     ),
+                                    errorWidget: (context, url, error) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          // Memicu reload gambar
+                                          CachedNetworkImage.evictFromCache(
+                                              url);
+                                          setState(() {});
+                                        },
+                                        child: Container(
+                                          color: Colors.grey[300],
+                                          child: const Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.error),
+                                              Text("Tap to reload"),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   ),
                                 ),
                                 const SizedBox(width: 10),
@@ -101,7 +137,7 @@ class UpdateDialog {
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       Text(
-                                        "Rp. ${dataProduct.sellingPrice}",
+                                        "Rp. ${dataProduct.price}",
                                         style: const TextStyle(
                                             fontSize: 13,
                                             fontWeight: FontWeight.bold),
@@ -314,8 +350,7 @@ class UpdateDialog {
                                               quantityStock: int.parse(
                                                   quantityStocktController
                                                       .text),
-                                              sellingPrice:
-                                                  dataProduct.sellingPrice,
+                                              sellingPrice: dataProduct.price,
                                               purchasePrice: double.parse(
                                                   purchasePriceController.text),
                                               addOrreduceStock: _typeChange,
@@ -328,14 +363,13 @@ class UpdateDialog {
                                                   dataProduct.barcode;
                                               dataProduct.stock =
                                                   dataProduct.stock;
-                                              dataProduct.sellingPrice =
-                                                  dataProduct.sellingPrice;
+                                              dataProduct.price =
+                                                  dataProduct.price;
                                               dataProduct.purchasePrice =
                                                   dataProduct.purchasePrice;
-                                              // Perbarui properti lain jika diperlukan
                                             });
 
-                                            if (response.status) {
+                                            if (response) {
                                               scaffoldMessenger.showSnackBar(
                                                 const SnackBar(
                                                   content:
@@ -346,8 +380,8 @@ class UpdateDialog {
                                             } else {
                                               scaffoldMessenger.showSnackBar(
                                                 const SnackBar(
-                                                  content:
-                                                      Text('Terjadi kesalahan'),
+                                                  content: Text(
+                                                      'Terjadi kesalahan, add or reduce tidak boleh kosong'),
                                                   backgroundColor: Colors.red,
                                                 ),
                                               );

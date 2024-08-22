@@ -35,6 +35,7 @@ class DetailYearTransaction {
   final String date;
   final int income;
   final int profit;
+  final int totalTransactionPermonth;
   final int monthNum;
 
   DetailYearTransaction({
@@ -42,6 +43,7 @@ class DetailYearTransaction {
     required this.date,
     required this.income,
     required this.profit,
+    required this.totalTransactionPermonth,
     required this.monthNum,
   });
 
@@ -51,6 +53,7 @@ class DetailYearTransaction {
         date: json['date'],
         income: double.parse(json['income']).round(),
         profit: double.parse(json['profit']).round(),
+        totalTransactionPermonth: json['total_transaction_permonth'],
         monthNum: json['month_num']);
   }
 }

@@ -79,6 +79,8 @@ class _AddCategoryState extends State<AddCategory> {
                       }
                     } else {
                       if (context.mounted) {
+                        Navigator.of(context)
+                            .pushReplacementNamed("/categories");
                         ScaffoldMessenger.of(snackBarContext).showSnackBar(
                           SnackBar(
                             duration: const Duration(seconds: 5),
@@ -86,6 +88,7 @@ class _AddCategoryState extends State<AddCategory> {
                             backgroundColor: Colors.green,
                           ),
                         );
+                        setState(() {});
                       }
                     }
                   }

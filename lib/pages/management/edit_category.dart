@@ -67,19 +67,24 @@ class _CategoryModifierState extends State<CategoryModifier> {
                       _isLoading = false;
                     });
                     if (response["sattus"] == false) {
-                      // ignore: use_build_context_synchronously
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        duration: const Duration(seconds: 5),
-                        content: Text(response['message']),
-                        backgroundColor: Colors.red,
-                      ));
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          duration: const Duration(seconds: 5),
+                          content: Text(response['message']),
+                          backgroundColor: Colors.red,
+                        ));
+                      }
                     } else {
-                      // ignore: use_build_context_synchronously
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        duration: const Duration(seconds: 5),
-                        content: Text(response['message']),
-                        backgroundColor: Colors.green,
-                      ));
+                      if (context.mounted) {
+                        Navigator.of(context)
+                            .pushReplacementNamed("/categories");
+                        // ignore: use_build_context_synchronously
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          duration: const Duration(seconds: 5),
+                          content: Text(response['message']),
+                          backgroundColor: Colors.green,
+                        ));
+                      }
                     }
                   } catch (e) {
                     rethrow;

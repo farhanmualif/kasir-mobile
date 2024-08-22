@@ -25,7 +25,6 @@ class GetMonthlyTransaction with AccessTokenProvider {
       if (response.statusCode == 200) {
         final resBody = jsonDecode(response.body);
 
-        print("check resBody: $resBody");
 
         return ApiResponse.fromJson(
           resBody,

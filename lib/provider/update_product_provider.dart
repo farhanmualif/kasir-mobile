@@ -29,13 +29,6 @@ class UpdateProduct with AccessTokenProvider {
         "add_or_reduce_stock": addOrreduceStock,
       };
 
-      // "name": "stella",
-      // "barcode": "8992745999881",
-      // "add_or_reduce_stock": "add",
-      // "quantity_stok": 10,
-      // "selling_price": 2000,
-      // "purchase_price": 3000
-
       var response = await http.put(Uri.parse("$domain/api/products/$uuid"),
           body: json.encode(body),
           headers: {

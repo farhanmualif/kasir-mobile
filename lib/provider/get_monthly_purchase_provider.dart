@@ -22,7 +22,7 @@ class GetMonthlyPurchase with AccessTokenProvider {
         },
       );
 
-      print("check monthly purchase: ${response.body}");
+
 
       if (response.statusCode == 200) {
         final resBody = jsonDecode(response.body);

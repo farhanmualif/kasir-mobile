@@ -21,7 +21,6 @@ class GetInvoiceProvider with AccessTokenProvider {
           'Authorization': 'Bearer $token'
         },
       );
-      print("invoice resBody: ${response.body}");
 
       if (response.statusCode == 200) {
         final resBody = jsonDecode(response.body);

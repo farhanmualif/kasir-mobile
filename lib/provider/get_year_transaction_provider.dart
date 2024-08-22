@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kasir_mobile/helper/get_access_token.dart';
 import 'package:kasir_mobile/interface/api_response_interface.dart';
@@ -21,6 +22,8 @@ class GetYearTransaction with AccessTokenProvider {
           'Authorization': 'Bearer $token'
         },
       );
+
+      debugPrint(response.body);
 
       if (response.statusCode == 200) {
         final resBody = jsonDecode(response.body);

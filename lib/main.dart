@@ -4,6 +4,8 @@ import 'package:kasir_mobile/pages/auth/login_page.dart';
 import 'package:kasir_mobile/pages/auth/register_page.dart';
 import 'package:kasir_mobile/pages/home/home_app.dart';
 import 'package:kasir_mobile/pages/home/splash.dart';
+import 'package:kasir_mobile/pages/management/add_category.dart';
+import 'package:kasir_mobile/pages/management/product_category.dart';
 import 'package:kasir_mobile/pages/transaction/add_product_page.dart';
 import 'package:kasir_mobile/pages/transaction/barcode_scanner_result_page.dart';
 import 'package:kasir_mobile/pages/transaction/cart_page.dart';
@@ -46,6 +48,10 @@ class MyApp extends StatelessWidget {
           case '/form-add-product':
             return MaterialPageRoute(
                 builder: (context) => const AddProoductPage());
+          case '/form-add-category':
+            return MaterialPageRoute(builder: (context) => const AddCategory());
+          case '/categories':
+            return MaterialPageRoute(builder: (context) => const ProductCategory());
           case '/transaction':
             final args = settings.arguments as Map<String, dynamic>;
             return MaterialPageRoute(

@@ -94,7 +94,7 @@ class _PrintPreparationState extends State<PrintPreparation> {
                   ElevatedButton(
                     onPressed: () async {
                       try {
-                        print("button clicked");
+                      
                         if ((await printer.isConnected)!) {
                           final invoice =
                               await getInvoice(widget.noTransaction);

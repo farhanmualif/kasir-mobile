@@ -21,8 +21,7 @@ class _ListAnualTransactionReportState
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: GetYearTransaction.getYearTransaction(
-          DateFormat('y').format(DateTime.now())),
+      future: GetYearTransaction.getYearTransaction(DateFormat('y').format(DateTime.now())),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -34,7 +33,7 @@ class _ListAnualTransactionReportState
           );
         } else if (snapshot.data == null || snapshot.data!.data == null) {
           return const Center(
-            child: Text('data belum tersedia'),
+            child: Text('Data Belum Tersedia'),
           );
         } else if (snapshot.hasError) {
           return Center(
@@ -191,7 +190,7 @@ class _ListAnualTransactionReportState
                                     Column(
                                       children: [
                                         Text(
-                                          "${snapshot.data!.data!.totalTransactions} Transaksi",
+                                          "${snapshot.data!.data!.transactions[index].totalTransactionPermonth} Transaksi",
                                           style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 10,

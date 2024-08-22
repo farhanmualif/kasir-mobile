@@ -30,7 +30,7 @@ class _ListAnualPurchaseReportState extends State<ListAnualPurchaseReport> {
           );
         } else if (snapshot.data == null || snapshot.data!.data == null) {
           return const Center(
-            child: Text('data belum tersedia'),
+            child: Text('Data Belum Tersedia'),
           );
         } else if (snapshot.hasError) {
           return Center(

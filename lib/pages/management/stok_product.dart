@@ -1,13 +1,17 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kasir_mobile/components/update_dialog.dart';
 import 'package:kasir_mobile/helper/format_cuurency.dart';
+import 'package:kasir_mobile/helper/get_access_token.dart';
 import 'package:kasir_mobile/interface/api_response_interface.dart';
 import 'package:kasir_mobile/interface/product_interface.dart';
 import 'package:kasir_mobile/provider/delete_product_provider.dart';
 import 'package:kasir_mobile/provider/get_all_product_provider.dart';
+import 'package:kasir_mobile/themes/AppColors.dart';
 
 class StokProductManagement extends StatefulWidget {
   const StokProductManagement({super.key});
@@ -16,10 +20,20 @@ class StokProductManagement extends StatefulWidget {
   State<StokProductManagement> createState() => _StokProductManagementState();
 }
 
-class _StokProductManagementState extends State<StokProductManagement> {
+class _StokProductManagementState extends State<StokProductManagement>
+    with AccessTokenProvider {
   var domain = dotenv.env['BASE_URL'];
   List<Product> findProduct = [];
   bool isLoading = true;
+
+  String? _accessToken;
+
+  Future<void> _initAccessToken() async {
+    _accessToken = await getToken();
+    if (mounted) {
+      setState(() {});
+    }
+  }
 
   Future<List<Product>> getProduct() async {
     try {
@@ -56,6 +70,7 @@ class _StokProductManagementState extends State<StokProductManagement> {
   @override
   void initState() {
     super.initState();
+    _initAccessToken();
     getProduct().then((value) {
       setState(() {
         findProduct = value;
@@ -141,12 +156,45 @@ class _StokProductManagementState extends State<StokProductManagement> {
                         child: Row(
                           children: [
                             Expanded(
-                              child: Image(
-                                image: NetworkImage(
-                                  "http://$domain/storage/images/${findProduct[index].image}",
+                              child: CachedNetworkImage(
+                                cacheManager: CacheManager(Config('imgCacheKey',
+                                    stalePeriod: const Duration(days: 1))),
+                                imageUrl:
+                                    "$domain/api/products/images/${findProduct[index].uuid}",
+                                httpHeaders: {
+                                  "Authorization": "Bearer $_accessToken",
+                                  "Access-Control-Allow-Headers":
+                                      "Access-Control-Allow-Origin, Accept"
+                                },
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => Container(
+                                  color: Colors.grey[300],
+                                  child: const Center(
+                                    child: CircularProgressIndicator(
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
                                 ),
-                                height: 70,
-                                width: 70,
+                                errorWidget: (context, url, error) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      // Memicu reload gambar
+                                      CachedNetworkImage.evictFromCache(url);
+                                      setState(() {});
+                                    },
+                                    child: Container(
+                                      color: Colors.grey[300],
+                                      child: const Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.error),
+                                          Text("Tap to reload"),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                             ),
                             const SizedBox(
@@ -280,7 +328,7 @@ class _StokProductManagementState extends State<StokProductManagement> {
                                           onTap: () async {
                                             var dialog = UpdateDialog(
                                                 dataProduct:
-                                                    findProduct[index]);
+                                                    findProduct[index], accessToken: _accessToken);
                                             dialog
                                                 .showEditingFormDialog(context);
                                           },
