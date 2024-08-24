@@ -22,134 +22,42 @@ class _PrintPreparationState extends State<PrintPreparation> {
 
   @override
   void initState() {
-    _getDevices();
     super.initState();
+    _getDevices();
+    _checkBluetoothStatus();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cetak Struk'),
+  void showSnackbar(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: isError ? Colors.red : Colors.green,
+        content: Text(message),
       ),
-      body: _isLoading
-          ? const CircularProgressIndicator(
-              color: AppColors.primary,
-            )
-          : Center(
-              child: Column(
-                children: [
-                  DropdownButton<BluetoothDevice>(
-                    hint: const Text('Pilih Perangkat Printer'),
-                    value: _selectedDevice,
-                    items: _devices
-                        .map((e) => DropdownMenuItem(
-                              value: e,
-                              child: Text(e.name!),
-                            ))
-                        .toList(),
-                    onChanged: (BluetoothDevice? value) async {
-                      if (value != null) {
-                        setState(() {
-                          _isLoading = true;
-                        });
-
-                        try {
-                          bool? isConnected = await printer.isConnected;
-                          if (isConnected == true) {
-                            // Jika sudah terhubung, coba putuskan koneksi terlebih dahulu
-                            await printer.disconnect();
-                          }
-
-                          // Sekarang coba hubungkan ke perangkat baru
-                          await printer.connect(value);
-
-                          setState(() {
-                            _selectedDevice = value;
-                          });
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  backgroundColor: Colors.green,
-                                  content: Text('Terhubung ke ${value.name}')),
-                            );
-                          }
-                        } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  backgroundColor: Colors.red,
-                                  content:
-                                      Text('Gagal terhubung: ${e.toString()}')),
-                            );
-                          }
-                        } finally {
-                          setState(() {
-                            _isLoading = false;
-                          });
-                        }
-                      }
-                    },
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      try {
-                      
-                        if ((await printer.isConnected)!) {
-                          final invoice =
-                              await getInvoice(widget.noTransaction);
-
-                          // Cetak menggunakan thermal printer
-                          await printReceipt(printer, invoice);
-
-                          await printer.paperCut();
-                        } else {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                backgroundColor: Colors.red,
-                                content:
-                                    Text("Perangkat Printer tidak terhubung"),
-                              ),
-                            );
-                          }
-                        }
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              backgroundColor: Colors.red,
-                              content: Text("Terjadi kesalahan: $e"),
-                            ),
-                          );
-                        }
-                      }
-                    },
-                    child: const Text("Cetak Struk"),
-                  ),
-                  _selectedDevice != null
-                      ? const Text("Device Printer Selected")
-                      : const Text("")
-                ],
-              ),
-            ),
     );
   }
 
-  void _getDevices() async {
+  Future<void> _checkBluetoothStatus() async {
+    bool? isOn = await printer.isOn;
+    if (isOn == false) {
+      showSnackbar("Bluetooth tidak aktif. Mohon aktifkan Bluetooth.",
+          isError: true);
+    }
+  }
+
+  Future<void> _getDevices() async {
     _devices = await printer.getBondedDevices();
     setState(() {});
   }
 
-  Future<ApiResponse<Invoice>> getInvoice(String noTransaction) async {
+  Future<ApiResponse<Invoice>> _getInvoice(String noTransaction) async {
     try {
       return await GetInvoiceProvider.getInvoice(noTransaction);
     } catch (e) {
-      throw Exception(e);
+      throw Exception('Failed to get invoice: $e');
     }
   }
 
-  Future<void> printReceipt(
+  Future<void> _printReceipt(
       BlueThermalPrinter printer, ApiResponse<Invoice> invoiceData) async {
     final data = invoiceData.data!;
 
@@ -173,7 +81,6 @@ class _PrintPreparationState extends State<PrintPreparation> {
       String totalPrice = item.totalPrice.toString().padLeft(6);
       printer.printCustom("$itemName $quantity $itemPrice $totalPrice", 1, 0);
 
-      // Handle overflow for item name
       if (item.name.length > 12) {
         printer.printCustom(item.name.substring(12), 1, 0);
       }
@@ -187,6 +94,115 @@ class _PrintPreparationState extends State<PrintPreparation> {
     printer.printNewLine();
     printer.printCustom("** Terima kasih atas kunjungan anda **", 1, 1);
     printer.printNewLine();
-    printer.paperCut(); // Memotong kertas
+    await printer.paperCut();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Cetak Struk'),
+      ),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.primary))
+          : _buildPrepare(),
+    );
+  }
+
+  Widget _buildPrepare() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _buildDropdownDevicePrinterMenu(),
+          const SizedBox(height: 20),
+          _printButton(),
+          const SizedBox(height: 20),
+          if (_selectedDevice != null)
+            Text("Device Printer Selected: ${_selectedDevice!.name}"),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDropdownDevicePrinterMenu() {
+    return DropdownButton<BluetoothDevice>(
+      hint: const Text('Pilih Perangkat Printer'),
+      value: _selectedDevice,
+      items: _devices
+          .map((e) => DropdownMenuItem(value: e, child: Text(e.name!)))
+          .toList(),
+      onChanged: (value) => _onDeviceSelected(value),
+    );
+  }
+
+  Widget _printButton() {
+    return ElevatedButton(
+      onPressed: _selectedDevice == null ? null : _printInvoice,
+      child: const Text("Cetak Struk"),
+    );
+  }
+
+  Future<void> _onDeviceSelected(BluetoothDevice? value) async {
+    if (value == null) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      bool? isOn = await printer.isOn;
+      if (isOn == false) {
+        showSnackbar("Bluetooth tidak aktif. Mohon aktifkan Bluetooth.",
+            isError: true);
+        return;
+      }
+
+      bool? isAvailable = await printer.isAvailable;
+      if (isAvailable == false) {
+        showSnackbar("Perangkat printer tidak tersedia", isError: true);
+        return;
+      }
+
+      if (await printer.isConnected == true) {
+        await printer.disconnect();
+      }
+
+      await printer.connect(value);
+
+      setState(() => _selectedDevice = value);
+      showSnackbar('Terhubung ke ${value.name}');
+    } catch (e) {
+      showSnackbar('Gagal terhubung: ${e.toString()}', isError: true);
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _printInvoice() async {
+    setState(() => _isLoading = true);
+
+    try {
+      if (await printer.isConnected == true) {
+        final invoice = await _getInvoice(widget.noTransaction);
+
+        if (invoice.data == null) {
+          showSnackbar("File tidak ditemukan", isError: true);
+          return;
+        }
+
+        await _printReceipt(printer, invoice);
+        showSnackbar('Struk berhasil dicetak');
+      } else {
+        showSnackbar("Perangkat Printer tidak terhubung", isError: true);
+      }
+    } catch (e) {
+      if (e.toString().contains('500')) {
+        showSnackbar("File tidak ditemukan", isError: true);
+      } else {
+        showSnackbar("Terjadi kesalahan: $e", isError: true);
+      }
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 }

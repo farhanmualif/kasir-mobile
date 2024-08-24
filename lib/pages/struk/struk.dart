@@ -9,7 +9,7 @@ class Struk extends StatefulWidget {
   final String? noTransaction;
 
   @override
-  State<Struk> createState() => _StrukState();
+  State createState() => _StrukState();
 }
 
 class _StrukState extends State<Struk> with AccessTokenProvider {
@@ -23,11 +23,25 @@ class _StrukState extends State<Struk> with AccessTokenProvider {
     _initializeToken();
   }
 
-  Future<void> _initializeToken() async {
-    _accessToken = await getToken();
-    setState(() {
-      _isLoading = false; // Token telah diinisialisasi
-    });
+  Future _initializeToken() async {
+    try {
+      _accessToken = await getToken();
+    } catch (e) {
+      _showErrorSnackBar("Gagal mendapatkan token: $e");
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 
   @override
@@ -37,9 +51,7 @@ class _StrukState extends State<Struk> with AccessTokenProvider {
         appBar: AppBar(
           title: const Text("Struk"),
         ),
-        body: const Center(
-            child:
-                CircularProgressIndicator()), // Menampilkan indikator loading
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -51,26 +63,43 @@ class _StrukState extends State<Struk> with AccessTokenProvider {
       ),
       body: Column(
         children: [
-          Expanded(
-              child: widget.noTransaction != null
-                  ? SfPdfViewer.network(
-                      url,
-                      initialZoomLevel: 5,
-                      headers: _accessToken != null
-                          ? {"Authorization": "Bearer $_accessToken"}
-                          : throw Exception(" Access Token Not Found"),
-                    )
-                  : const Center(child: Text("Not found"))),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) =>  PrintPreparation(noTransaction: widget.noTransaction!,),
-              ));
-            },
-            child: const Text('Cetak Struk'),
-          ),
+          _buildPdfContent(url),
+          _buildButtonPreparePrint(),
         ],
       ),
+    );
+  }
+
+  Widget _buildPdfContent(String url) {
+    return Expanded(
+      child: widget.noTransaction != null
+          ? SfPdfViewer.network(
+              url,
+              initialZoomLevel: 5,
+              headers: _accessToken != null
+                  ? {"Authorization": "Bearer $_accessToken"}
+                  : {},
+              onDocumentLoadFailed: (PdfDocumentLoadFailedDetails details) {
+                _showErrorSnackBar("Gagal memuat PDF: ${details.error}");
+              },
+            )
+          : const Center(child: Text("Not found")),
+    );
+  }
+
+  Widget _buildButtonPreparePrint() {
+    return ElevatedButton(
+      onPressed: () {
+        if (widget.noTransaction != null) {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) =>
+                PrintPreparation(noTransaction: widget.noTransaction!),
+          ));
+        } else {
+          _showErrorSnackBar("Nomor transaksi tidak tersedia");
+        }
+      },
+      child: const Text('Cetak Struk'),
     );
   }
 }
