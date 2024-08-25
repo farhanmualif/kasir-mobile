@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:kasir_mobile/helper/request_with_retry.dart';
 import 'package:kasir_mobile/interface/category_interface.dart';
 import 'package:kasir_mobile/interface/product_interface.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
 import 'package:kasir_mobile/helper/get_access_token.dart';
 
 class GetAllProduct with AccessTokenProvider {
@@ -81,12 +81,18 @@ class GetAllProduct with AccessTokenProvider {
       String? token = await AccessTokenProvider.token();
       debugPrint("Data not in cache, fetching from API");
 
-      var response =
-          await http.get(Uri.parse("$domain/api/products"), headers: {
+      var response = await requestWithRetry("$domain/api/products", headers: {
         "Content-Type": "application/json",
         "Accept": "application/json",
         'Authorization': 'Bearer $token'
       });
+
+      // var response =
+      //     await http.get(Uri.parse("$domain/api/products"), headers: {
+      //   "Content-Type": "application/json",
+      //   "Accept": "application/json",
+      //   'Authorization': 'Bearer $token'
+      // }).timeout(const Duration(seconds: 5));
 
       final body = json.decode(response.body);
       debugPrint("fetch data successfully: $body");

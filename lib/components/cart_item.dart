@@ -53,6 +53,8 @@ class _CartItemState extends State<CartItem> with AccessTokenProvider {
 
   @override
   Widget build(BuildContext context) {
+    print("check transaction list: ${widget.listTransaction}");
+
     return _isLoading
         ? const Center(
             child: CircularProgressIndicator(

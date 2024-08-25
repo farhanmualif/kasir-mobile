@@ -1,10 +1,11 @@
-// ignore_for_file: use_build_context_synchronously
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kasir_mobile/interface/api_response_interface.dart';
 import 'package:kasir_mobile/interface/register_result_interface.dart';
 import 'package:kasir_mobile/provider/auth_provider.dart';
+import 'package:kasir_mobile/themes/AppColors.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -34,8 +35,13 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void _register(BuildContext context, String name, String email,
       String password, String confirmPassword, String address) async {
+    if (!mounted) return;
+    setState(() {
+      _isLoading = true;
+    });
     try {
       if (passwordController.text != confirmPasswordController.text) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text("password dan konformasi password tidak sesuai")));
         return;
@@ -43,43 +49,49 @@ class _RegisterPageState extends State<RegisterPage> {
       ApiResponse<RegisterResult> response =
           await Auth.register(name, email, password, confirmPassword, address);
 
-      if (mounted) {
-        // ignore: unnecessary_null_comparison
-        if (response != null) {
-          if (response.status == true) {
-            // Registrasi berhasil
-            // Navigasi ke halaman login
-            Navigator.pushReplacementNamed(context, '/login').then((_) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text("Berhasil register. Silakan login."),
-                backgroundColor: Colors.green,
-              ));
-            });
-          } else {
-            // Registrasi gagal
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              duration: const Duration(seconds: 5),
-              content: Text(response.message),
-              backgroundColor: Colors.red,
+      if (response != null) {
+        if (response.status == true) {
+          if (!context.mounted) return;
+          Navigator.pushReplacementNamed(context, '/login').then((_) {
+            if (!mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("Berhasil register. Silakan login."),
+              backgroundColor: Colors.green,
             ));
-          }
+          });
+        } else {
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            duration: const Duration(seconds: 5),
+            content: Text(json.decode(response.message.toString())),
+            backgroundColor: Colors.red,
+          ));
         }
       }
     } catch (e) {
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("terjadi kesalahan ${e.toString()}")));
+    } finally {
+      if (context.mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Material(
-        child: _isLoading
-            ? const Center(
-                child: CircularProgressIndicator(),
-              )
-            : Container(
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+                color: AppColors.primary,
+              ),
+            )
+          : Material(
+              child: Container(
                 margin: const EdgeInsets.all(40),
                 child: SingleChildScrollView(
                   child: Column(
@@ -145,8 +157,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
                                       return "email tidak boleh kosong";
-                                    } else if (!value.contains('@')) {
-                                      return "email tidak valid";
                                     }
                                     return null;
                                   },
@@ -161,6 +171,36 @@ class _RegisterPageState extends State<RegisterPage> {
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(10))),
                                     label: Text('Email'),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                margin:
+                                    const EdgeInsets.only(top: 5, bottom: 20),
+                                child: TextFormField(
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return "alamat tidak boleh kosong";
+                                    } else if (!value.contains('@')) {
+                                      return "alamat tidak valid";
+                                    }
+                                    return null;
+                                  },
+                                  controller: addressController,
+                                  cursorColor: AppColors.primary,
+                                  decoration: const InputDecoration(
+                                    enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: AppColors.primary,
+                                        ),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10))),
+                                    label: Text('Address'),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                         Radius.circular(10),
@@ -250,17 +290,10 @@ class _RegisterPageState extends State<RegisterPage> {
                                 ),
                               ),
                               TextButton(
-                                onPressed: () async {
+                                onPressed: () {
                                   if (_formKey.currentState != null &&
                                       _formKey.currentState!.validate()) {
                                     _formKey.currentState!.save();
-                                  }
-
-                                  if (emailController.text.isNotEmpty &&
-                                      passwordController.text.isNotEmpty) {
-                                    setState(() {
-                                      _isLoading = true;
-                                    });
                                     _register(
                                         context,
                                         nameController.text,
@@ -268,11 +301,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                         passwordController.text,
                                         confirmPasswordController.text,
                                         addressController.text);
-                                    setState(() {
-                                      _isLoading = false;
-                                    });
-                                  } else {
-                                    return;
                                   }
                                 },
                                 style: TextButton.styleFrom(
@@ -300,7 +328,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
               ),
-      ),
+            ),
     );
   }
 }

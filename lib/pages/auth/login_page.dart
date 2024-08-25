@@ -31,7 +31,9 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _login(BuildContext context, String email, String password) async {
-    _isLoading = true;
+    setState(() {
+      _isLoading = true;
+    });
     try {
       ApiResponse<LoginResult> response = await Auth.login(email, password);
       if (response != null) {
@@ -44,26 +46,30 @@ class _LoginPageState extends State<LoginPage> {
 
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            return;
           }
         } else {
           SharedPreferences pref = await SharedPreferences.getInstance();
           pref.setString("UserEmail", response.data!.user.email);
           pref.setString("name", response.data!.user.name);
           pref.setString('AccessToken', response.data!.user.token);
-          Navigator.pushReplacement(
-              // ignore: use_build_context_synchronously
-              context,
-              MaterialPageRoute(builder: (context) => const MyApp()));
+          if (context.mounted) {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => const MyApp()));
+          }
         }
       }
     } catch (e, stacktrace) {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("terjadi kesalahan")));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text("terjadi kesalahan")));
+      }
       debugPrint('$e $stacktrace');
     } finally {
-      _isLoading = false;
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -71,35 +77,34 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Material(
-        child: _isLoading
-            ? const Center(
-                child: CircularProgressIndicator(),
-              )
-            : Container(
-                margin: const EdgeInsets.all(40),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Login",
-                      style:
-                          TextStyle(fontSize: 40, fontWeight: FontWeight.w900),
+        child: Container(
+          margin: const EdgeInsets.all(40),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Login",
+                style: TextStyle(fontSize: 40, fontWeight: FontWeight.w900),
+              ),
+              Row(
+                children: [
+                  const Text("Belum memiliki akun? "),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/register');
+                    },
+                    child: const Text(
+                      "Buat sekarang",
+                      style: TextStyle(color: Color(0xff076A68)),
                     ),
-                    Row(
-                      children: [
-                        const Text("Belum memiliki akun? "),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, '/register');
-                          },
-                          child: const Text(
-                            "Buat sekarang",
-                            style: TextStyle(color: Color(0xff076A68)),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Container(
+                  ),
+                ],
+              ),
+              _isLoading
+                  ? const Center( child:  CircularProgressIndicator(
+                      color: AppColors.primary,
+                    ),)
+                  : Container(
                       margin: const EdgeInsets.only(top: 40),
                       child: Form(
                         key: _formKey,
@@ -175,24 +180,12 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             TextButton(
-                              onPressed: () async {
+                              onPressed: () {
                                 if (_formKey.currentState != null &&
                                     _formKey.currentState!.validate()) {
                                   _formKey.currentState!.save();
-                                }
-
-                                if (emailController.text.isNotEmpty &&
-                                    passwordController.text.isNotEmpty) {
-                                  setState(() {
-                                    _isLoading = true;
-                                  });
                                   _login(context, emailController.text,
                                       passwordController.text);
-                                  setState(() {
-                                    _isLoading = false;
-                                  });
-                                } else {
-                                  return;
                                 }
                               },
                               style: TextButton.styleFrom(
@@ -213,9 +206,9 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     )
-                  ],
-                ),
-              ),
+            ],
+          ),
+        ),
       ),
     );
   }

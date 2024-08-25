@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:blue_thermal_printer/blue_thermal_printer.dart';
+import 'package:flutter/services.dart';
 import 'package:kasir_mobile/interface/api_response_interface.dart';
 import 'package:kasir_mobile/interface/invoice_interface.dart';
 import 'package:kasir_mobile/provider/get_invoice_provider.dart';
@@ -102,6 +103,7 @@ class _PrintPreparationState extends State<PrintPreparation> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cetak Struk'),
+        backgroundColor: AppColors.primary,
       ),
       body: _isLoading
           ? const Center(
@@ -163,14 +165,35 @@ class _PrintPreparationState extends State<PrintPreparation> {
         return;
       }
 
+      // Check if the printer is already connected
       if (await printer.isConnected == true) {
         await printer.disconnect();
       }
 
-      await printer.connect(value);
-
-      setState(() => _selectedDevice = value);
-      showSnackbar('Terhubung ke ${value.name}');
+      // Try to connect to the printer
+      try {
+        bool? connected = await printer.connect(value);
+        if (connected == true) {
+          setState(() => _selectedDevice = value);
+          showSnackbar('Terhubung ke ${value.name}');
+        } else {
+          showSnackbar(
+              'Gagal terhubung ke printer. Pastikan printer menyala dan dalam jangkauan.',
+              isError: true);
+        }
+      } on PlatformException catch (e) {
+        // Handle specific PlatformException for connect_error
+        if (e.code == 'connect_error' ||
+            e.message
+                    ?.contains('read failed, socket might closed or timeout') ==
+                true) {
+          showSnackbar(
+              'Gagal terhubung ke printer. Pastikan printer menyala dan dalam jangkauan.',
+              isError: true);
+        } else {
+          showSnackbar('Terjadi kesalahan: ${e.message}', isError: true);
+        }
+      }
     } catch (e) {
       showSnackbar('Gagal terhubung: ${e.toString()}', isError: true);
     } finally {
