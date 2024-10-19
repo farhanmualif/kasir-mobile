@@ -101,9 +101,11 @@ class _LoginPageState extends State<LoginPage> {
                 ],
               ),
               _isLoading
-                  ? const Center( child:  CircularProgressIndicator(
-                      color: AppColors.primary,
-                    ),)
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primary,
+                      ),
+                    )
                   : Container(
                       margin: const EdgeInsets.only(top: 40),
                       child: Form(

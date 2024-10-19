@@ -22,7 +22,7 @@ class TransactionData {
   String noTransaction;
   int totalPayment;
   int cash;
-  dynamic change; // Sesuaikan tipe data dengan kebutuhan Anda
+  dynamic change; 
   String createdAt;
   String updatedAt;
 

@@ -53,7 +53,6 @@ class _CartItemState extends State<CartItem> with AccessTokenProvider {
 
   @override
   Widget build(BuildContext context) {
-    print("check transaction list: ${widget.listTransaction}");
 
     return _isLoading
         ? const Center(
@@ -171,7 +170,9 @@ class _CartItemState extends State<CartItem> with AccessTokenProvider {
               Expanded(
                 flex: -1,
                 child: Text(
-                  widget.typeTransaction == "Transaksi" ? "Lanjut" : "Update",
+                  widget.typeTransaction == "Transaksi"
+                      ? "Lanjut"
+                      : "Tambah Barang",
                   style: const TextStyle(color: Color(0xff000000)),
                 ),
               ),

@@ -17,7 +17,7 @@ class PostExistsProductRequest {
 
   Map<String, dynamic> toJson() {
     return {
-      "uuid": barcode,
+      "uuid": uuid,
       "barcode": barcode,
       "quantity_stok": quantityStock,
     };
@@ -48,7 +48,6 @@ class PostExistsProducts {
       );
 
       var resBody = jsonDecode(response.body);
-      
 
       return ApiResponse.fromJson(resBody, (json) => null);
     } catch (e, stacktrace) {

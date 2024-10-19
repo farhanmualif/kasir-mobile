@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kasir_mobile/helper/get_access_token.dart';
 import 'package:kasir_mobile/interface/api_response_interface.dart';
@@ -22,8 +23,8 @@ class GetYearPurchase with AccessTokenProvider {
         },
       );
 
+      final resBody = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        final resBody = jsonDecode(response.body);
         return ApiResponse.fromJson(
           resBody,
           (json) => json is Map<String, dynamic>
@@ -31,10 +32,20 @@ class GetYearPurchase with AccessTokenProvider {
               : throw ArgumentError('Invalid JSON format'),
         );
       } else {
-        throw Exception('Failed to load data');
+        debugPrint('API request failed with status: ${response.statusCode}');
+        return ApiResponse(
+          status: false,
+          message: resBody['message'] ?? 'Failed to load data',
+          data: null,
+        );
       }
     } catch (e, stacktrace) {
-      throw Exception('line: $stacktrace: $e');
+      debugPrint('Error in getMonthlyTransaction: $e\n$stacktrace');
+      return ApiResponse(
+        status: false,
+        message: 'An error occurred: ${e.toString()}',
+        data: null,
+      );
     }
   }
 }

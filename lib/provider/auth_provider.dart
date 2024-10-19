@@ -41,6 +41,8 @@ class Auth with AccessTokenProvider {
       });
 
       var data = json.decode(response.body);
+      print("$domain/api/login");
+      print("data: $data");
       return ApiResponse.fromJson(data, (json) => LoginResult.fromjson(data));
     } catch (e, stacktrace) {
       throw Exception('line: $stacktrace: $e');

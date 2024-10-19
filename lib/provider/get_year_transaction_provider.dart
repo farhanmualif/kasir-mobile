@@ -25,8 +25,8 @@ class GetYearTransaction with AccessTokenProvider {
 
       debugPrint(response.body);
 
+      final resBody = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        final resBody = jsonDecode(response.body);
         return ApiResponse.fromJson(
           resBody,
           (json) => json is Map<String, dynamic>
@@ -34,10 +34,19 @@ class GetYearTransaction with AccessTokenProvider {
               : throw ArgumentError('Invalid JSON format'),
         );
       } else {
-        throw Exception('Failed to load data');
+        return ApiResponse(
+          status: false,
+          message: resBody['message'] ?? 'Failed to load data',
+          data: null,
+        );
       }
     } catch (e, stacktrace) {
-      throw Exception('line: $stacktrace: $e');
+      debugPrint('Error in getMonthlyTransaction: $e\n$stacktrace');
+      return ApiResponse(
+        status: false,
+        message: 'An error occurred: ${e.toString()}',
+        data: null,
+      );
     }
   }
 }

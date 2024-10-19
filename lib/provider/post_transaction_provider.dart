@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:kasir_mobile/helper/get_access_token.dart';
@@ -46,6 +47,7 @@ class PostTransaction with AccessTokenProvider {
             "Accept": "application/json",
             'Authorization': 'Bearer $token'
           });
+      debugPrint(response.body);
       return TransactionResponse.fromJson(jsonDecode(response.body));
     } catch (e) {
       rethrow;
